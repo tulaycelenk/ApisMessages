@@ -169,19 +169,37 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                     recive = "";
                     version = "05B";
                 }
+                ///////////////
+                else if (exporterType == ParameterHelper.ExporterFactoryCode.GermanyEdifactPaxLst)
+                {
+                    //Germany Apiste ung olmadığı için false 
+
+                    segmentUna = true; segmentUnb = true; segmentUng = false; segmentUnh = true; segmentBgm745 = true; segmentNadMs = true; segmentCom = true; segmentTdt20 = true; segmentLoc125 = true; segmentDtm189 = true; segmentLoc87 = true; segmentDtm232 = true; segmentNadFl = true; segmentAtt2 = true; segmentDtm329 = true; segmentMeaCt = true; segmentGei = true; segmentFtx = true; segmentLoc178 = true; segmentLoc179 = true; segmentLoc22 = true; segmentNat2 = true; segmentRffAvf = true; segmentRffAbo = true; segmentRffSea = true; segmentDoc = true; segmentDtm36 = true; segmentLoc91 = true; segmentCnt42 = true; segmentUnt = true; segmentUne = true; segmentUnz = true;
+                    recive = "BPOLAPIS";
+                    version = "02B";
+                }
                 #endregion
 
                 if (segmentUna && (exporterType == ParameterHelper.ExporterFactoryCode.DenmarkApis))
                     apisMessageHeaderList.Add("UNA:+.?*'");
                 if (segmentUna && (exporterType != ParameterHelper.ExporterFactoryCode.DenmarkApis))
                     apisMessageHeaderList.Add("UNA:+.? '");
+
+                //Germany Apiste 
+
                 if (segmentUnb && (exporterType != ParameterHelper.ExporterFactoryCode.JordanEdifactApis && exporterType != ParameterHelper.ExporterFactoryCode.NetherlandsPaxLst))
                     apisMessageHeaderList.Add("UNB+UNOA:4+BRIDGEIS" + "+" + recive + "+" + nowDate + "+" + confirmation1 + "'");
                 if (segmentUnb && (exporterType == ParameterHelper.ExporterFactoryCode.JordanEdifactApis || exporterType == ParameterHelper.ExporterFactoryCode.NetherlandsPaxLst))
+                  
                     apisMessageHeaderList.Add("UNB+UNOA:4+BRIDGEIS" + "+" + recive + "+" + nowDate + "+" + confirmation1 + "++" + recive + "'");
+                
+                //&& (exporterType != ParameterHelper.ExporterFactoryCode.GermanyEdifactPaxLst)
                 if (segmentUng)
                     apisMessageHeaderList.Add("UNG+PAXLST+BRIDGEIS" + "+" + recive + "+" + nowDate + "+" + confirmation2 + "+UN+D:" + version + "'");
+                //
                 if (segmentUnh)
+                    //":UN:IATA+" şeklinde olup ardından nowDate gerekli ama YYMMDDHHmmss şeklinde.
+                    //Ayrıca 3 segmente ayrılmış segmentlerin kuralları var "+01" "+02" "+03" olabiliyor. F ve C harfi koyulabiliyor ne olduklarını araştır.
                     apisMessageHeaderList.Add("UNH+" + confirmation3 + "+PAXLST:D:" + version + ":UN:IATA'");
                 if (segmentBgm745)
                     apisMessageHeaderList.Add("BGM+745'");

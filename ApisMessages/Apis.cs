@@ -30,7 +30,11 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
         public byte[] Export(FlightResponse flight, string exporterType, bool singleOrMultiPaxLst)
         {
             IEnumerable<PassengerDocs> passengerDocsList = PassengerDocsService.GetPassengerWithDocsInformation(new PassengerDocsPagingRequest() { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 }).Item1.Where(p => (p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Flown || p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Boarded || p.PassengerStatusCode == ParameterHelper.PaxStatusCode.CheckedIn) && p.PassengerId != 0).OrderBy(s => s.Surname);
+           
+            
             IEnumerable<Passenger> passengerList = PassengerService.QueryPassengersJoined(new PassengerPagingRequest { FlightId = flight.Id }).Where(p => p.PaxStatusCode == ParameterHelper.PaxStatusCode.Flown || p.PaxStatusCode == ParameterHelper.PaxStatusCode.Boarded || p.PaxStatusCode == ParameterHelper.PaxStatusCode.CheckedIn).OrderBy(s => s.Surname);
+
+
             IEnumerable<Baggage> passengerBaggageList = BaggageService.QueryBaggagesJoined(new BaggagePagingRequest { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 });
 
             using (var ms = new MemoryStream())
@@ -169,6 +173,7 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                     recive = "";
                     version = "05B";
                 }
+                #endregion
                 ///////////////
                 else if (exporterType == ParameterHelper.ExporterFactoryCode.GermanyEdifactPaxLst)
                 {
@@ -178,9 +183,22 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                     recive = "BPOLAPIS";
                     version = "02B";
                 }
-                #endregion
+                else if (exporterType == ParameterHelper.ExporterFactoryCode.GermanyCsvPaxLst)
+                {
+                    apisMessageList.Add(flight.AirlineIataCode + ";" + flight.FlightNumber.ToString().PadLeft(4, '0') + ";" + flight.DepartureIata + ";" + ((DateTime)flight.Sobt).AddSeconds(adepOfset).ToString("yyMMddHHmm", enUs) + ";"+ flight.DestinationIata + ";" + ((DateTime)flight.Sldt).AddSeconds(adesOfset == 0 ? adepOfset : adesOfset).ToString("yyMMddHHmm", enUs)+ ";" + passengerList.Count()+";;;;;;<CR+LF>");
 
-                if (segmentUna && (exporterType == ParameterHelper.ExporterFactoryCode.DenmarkApis))
+                    if(passengerList.Count()<=99)
+                    {
+                        foreach (var passenger in passengerList)
+                        {
+
+                        }
+
+
+                    }
+
+                    #region UN/EDIFACT
+                    if (segmentUna && (exporterType == ParameterHelper.ExporterFactoryCode.DenmarkApis))
                     apisMessageHeaderList.Add("UNA:+.?*'");
                 if (segmentUna && (exporterType != ParameterHelper.ExporterFactoryCode.DenmarkApis))
                     apisMessageHeaderList.Add("UNA:+.? '");
@@ -225,8 +243,8 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                     apisMessageHeaderList.Add("LOC+87+" + flight.DestinationIata + "'");
                 if (segmentDtm232 && flight.Sldt.HasValue)
                     apisMessageHeaderList.Add("DTM+232:" + ((DateTime)flight.Sldt).AddSeconds(adesOfset == 0 ? adepOfset : adesOfset).ToString("yyMMddHHmm", enUs) + ":201'");
-
-                foreach (var passengerDocs in passengerDocsList)
+                    #endregion
+                    foreach (var passengerDocs in passengerDocsList)
                 {
                     var passengerDoco = PassengerDocoService.GetPassengerDoco(passengerDocs.PassengerId).FirstOrDefault();
                     var passengerDoca = PassengerDocaService.GetPassengerDocaWithPaging(new PassengerDocaPagingRequest { PassengerId = passengerDocs.PassengerId, PageNumber = 1, PageSize = 2000 }).Item1.FirstOrDefault();

@@ -189,11 +189,19 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
 
                     if(passengerList.Count()<=99)
                     {
-                        foreach (var passenger in passengerList)
+                        foreach (var passengerDocs in passengerDocsList)
                         {
+                            apisMessageList.Add(passengerDocs.Surname + ";" + passengerDocs.Name + ";" + passengerDocs.GenderCode + ";" + passengerDocs.Dob.Value.ToString("yyMMdd") + ";" + passengerDocs.NationalityCode + ";" + flight.DepartureIata + ";" + flight.DestinationIata + ";" + passengerDocs.DocTypeCode + ";" + passengerDocs.DocNumber + ";" + passengerDocs.DocIssuerNationalityCode);
 
+
+                            if (!string.IsNullOrEmpty(passengerDocs.DocNumber) || !string.IsNullOrEmpty(passengerDocs.DocTypeCode)) 
+                                apisMessagePassengerList.Add((passengerDocs.DocTypeCode == "O" ? (!string.IsNullOrEmpty(passengerDocs.CustomDocTypeCode) ? (passengerDocs.CustomDocTypeCode.Substring(0, 1).ToUpper() == "I" || passengerDocs.CustomDocTypeCode.Substring(0, 1).ToUpper() == "P" ? passengerDocs.CustomDocTypeCode.Substring(0, 1) : (passengerDocs.CustomDocTypeCode.ToUpper() == "AC" ? passengerDocs.CustomDocTypeCode : "F")) : "F") : (!string.IsNullOrEmpty(passengerDocs.DocTypeCode) ? passengerDocs.DocTypeCode.Substring(0, 1).ToUpper() : "F")) + "+" + passengerDocs.DocNumber + "'");
+                       
+
+                        if (segmentDoc && (!string.IsNullOrEmpty(passengerDocs.DocNumber) || !string.IsNullOrEmpty(passengerDocs.DocTypeCode)))
+                            apisMessagePassengerList.Add("DOC+" + (passengerDocs.DocTypeCode == "O" ? (!string.IsNullOrEmpty(passengerDocs.CustomDocTypeCode) ? (passengerDocs.CustomDocTypeCode.Substring(0, 1).ToUpper() == "I" || passengerDocs.CustomDocTypeCode.Substring(0, 1).ToUpper() == "P" ? passengerDocs.CustomDocTypeCode.Substring(0, 1) : (passengerDocs.CustomDocTypeCode.ToUpper() == "AC" ? passengerDocs.CustomDocTypeCode : "F")) : "F") : (!string.IsNullOrEmpty(passengerDocs.DocTypeCode) ? passengerDocs.DocTypeCode.Substring(0, 1).ToUpper() : "F")) + "+" + passengerDocs.DocNumber + "'");
                         }
-
+                    }
 
                     }
 

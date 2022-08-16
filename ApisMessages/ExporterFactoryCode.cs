@@ -1,12 +1,12 @@
-﻿using System;
+﻿using ApisMessages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 public static class ExporterFactoryCode
-{
-    public const string Bpm = "BPM";
+{   public const string Bpm = "BPM";
     public const string RussiaApisPostDepartureForRussiaOverflyPaxLst = "RUSAPISPOSTOVRFLY";
     public const string RussiaApisPreDepartureForRussiaOverflyPaxLst = "RUSAPISPREOVRFLY";
     public const string Saudi = "SAUDI";
@@ -46,5 +46,4 @@ public static class ExporterFactoryCode
     public const string GermanyEdifactPaxLst = "DEEDIPAXLST";
     public const string ItalyApis = "ITALYAPIS";
     public const string KuwaitCovidForm = "KUWAITCVDFR";
-
 }

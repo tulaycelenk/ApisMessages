@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AviatorManager.ViewModel.Aodb;
+﻿using AviatorManager.ViewModel.Aodb;
 using Bridge.App.Core.Authentication;
 using Bridge.Common;
 using Bridge.Common.Logging;
@@ -11,40 +6,31 @@ using DCS.App.Service.Entity;
 using DCS.App.Service.Helper;
 using DCS.App.Service.Service.Dcs;
 using DCS.ViewModel.Paging;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-
+using System.Linq;
+using System.Text;
 using static Bridge.Common.ParameterHelper;
-using ApisMessages;
 
 namespace DCS.App.Service.Service.Exporter.PaxLst
 {
-    
-
-    class ApisMessages : IExporter
+    class ApisNew : IExporter
     {
-        
         private readonly CultureInfo enUs = new CultureInfo("en-Us");
         /// <summary>
-        /// Denmark Apis
+        /// APIS MESSAGES
         /// </summary>
         /// <param name="flight"></param>
         /// <param name="singleOrMultiPaxLst"></param>
         /// <returns></returns>
-        /// 
-       
         public byte[] Export(FlightResponse flight, string exporterType, bool singleOrMultiPaxLst)
         {
             IEnumerable<PassengerDocs> passengerDocsList = PassengerDocsService.GetPassengerWithDocsInformation(new PassengerDocsPagingRequest() { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 }).Item1.Where(p => (p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Flown || p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Boarded || p.PassengerStatusCode == ParameterHelper.PaxStatusCode.CheckedIn) && p.PassengerId != 0).OrderBy(s => s.Surname);
-
-
             IEnumerable<Passenger> passengerList = PassengerService.QueryPassengersJoined(new PassengerPagingRequest { FlightId = flight.Id }).Where(p => p.PaxStatusCode == ParameterHelper.PaxStatusCode.Flown || p.PaxStatusCode == ParameterHelper.PaxStatusCode.Boarded || p.PaxStatusCode == ParameterHelper.PaxStatusCode.CheckedIn).OrderBy(s => s.Surname);
-
-
             IEnumerable<Baggage> passengerBaggageList = BaggageService.QueryBaggagesJoined(new BaggagePagingRequest { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 });
-
-            using (var ms = new MemoryStream())
-            {
+                       
                 RestHelper rst = new RestHelper(new UrlProviderWithToken(), new HeaderProvider());
                 var adesTimezone = rst.GetTimezoneOffsetByAirport(flight.AdesId, DateTime.UtcNow);
                 var adesOfset = adesTimezone != null ? TimeSpan.FromSeconds(adesTimezone.GmtOffset).TotalSeconds : 0;
@@ -64,7 +50,6 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                 List<string> apisMessagePassengerList = new List<string>();
                 List<string> apisMessageDividedPassengerList = new List<string>();
                 List<string> apisMessageFootherList = new List<string>();
-
                 int apisMessageHeaderListCharecterCount = 0;
                 int apisMessagePassengerListCharecterCount = 0;
                 int apisMessageFootherListCharecterCount = 0;
@@ -74,145 +59,88 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                 int confirmation3 = rnd.Next(100000000, 999999999); //UNH ve UNT için
                 int partNumber = 1;
                 bool segmentUna = true, segmentUnb = true, segmentUng = true, segmentUnh = true, segmentBgm745 = true, segmentBgm266 = true, segmentBgm266Cl = true, segmentRffTn = true, segmentNadMs = true, segmentCom = true, segmentTdt20 = true, segmentTdt34 = true, segmentLoc125 = true, segmentDtm189 = true, segmentLoc87 = true, segmentDtm232 = true, segmentNadFl = true, segmentAtt2 = true, segmentDtm329 = true, segmentMeaCt = true, segmentMeaWt = true, segmentGei = true, segmentFtx = true, segmentLoc178 = true, segmentLoc179 = true, segmentLoc22 = true, segmentNat2 = true, segmentRffAvf = true, segmentRffAbo = true, segmentRffSea = true, segmentRffCr = true, segmentDoc = true, segmentDtm36 = true, segmentLoc91 = true, segmentCnt42 = true, segmentUnt = true, segmentUne = true, segmentUnz = true;
-                string recive = null; 
+                string recive = null; ;
                 string version = null;
 
                 #region Export Type
-                if (exporterType == ParameterHelper.ExporterFactoryCode.BelgiumApis)
+                if (exporterType == ParameterHelper.ExporterFactoryCode.FranceApis || exporterType == ParameterHelper.ExporterFactoryCode.ItalyApis || exporterType == ParameterHelper.ExporterFactoryCode.LebenonApis || exporterType == ParameterHelper.ExporterFactoryCode.NetherlandsPaxLst || exporterType == ParameterHelper.ExporterFactoryCode.SwissEdifactApis)
                 {
-                    recive = "BEGOVAPI";
-                    version = "15B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.DenmarkApis)
-                {
-                    recive = "DKGOVAPI";
-                    version = "05B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.FinlandApis)
-                {
-                   recive = "FIAPIS";
-                    version = "05B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.FranceApis)
-                {
-                    
-                    recive = "APIPNRFR";
-                    version = "02B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.JordanEdifactApis)
-                {
-                    recive = "JORAPIS";
-                    version = "12B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.IraqApis)
-                {
-                    recive = "IQGOVAPI";
-                    version = "15B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.ItalyApis)
-                {
-                    recive = "BCSAPIS";
-                    version = "02B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.LebenonApis)
-                {
-                    recive = "BCSAPIS";
-                    version = "02B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.NetherlandsPaxLst)
-                {
-                    recive = "NLDAPIKM";
-                    version = "02B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.RomaniaApis)
-                {
-                    recive = "";
-                    version = "05B";
+                    GetVersiyon02B();
+                    recive = exporterType == ParameterHelper.ExporterFactoryCode.FranceApis ? "APIPNRFR" : (exporterType == ParameterHelper.ExporterFactoryCode.ItalyApis ? "BCSAPIS" : (exporterType == ParameterHelper.ExporterFactoryCode.LebenonApis ? "BCSAPIS" : (exporterType == ParameterHelper.ExporterFactoryCode.NetherlandsPaxLst ? "NLDAPIKM" : (exporterType == ParameterHelper.ExporterFactoryCode.SwissEdifactApis ? "HDQCH2X" : ""))));
                 }
                 else if (exporterType == ParameterHelper.ExporterFactoryCode.RussiaApisPostDepartureForRussiaArrivalPaxLst)
                 {
+                    GetVersiyon02B();
+                    segmentBgm266 = true; segmentTdt20 = true; segmentBgm745 = false;
                     recive = "RUSAPIS";
-                    version = "02B";
                 }
                 else if (exporterType == ParameterHelper.ExporterFactoryCode.RussiaApisPostDepartureForRussiaOverflyPaxLst)
                 {
+                    GetVersiyon02B();
+                    segmentBgm266 = true; segmentTdt34 = true; segmentBgm745 = false;
                     recive = "RUSAPIS";
-                    version = "02B";
                 }
                 else if (exporterType == ParameterHelper.ExporterFactoryCode.RussiaApisPreDepartureForRussiaArrivalPaxLst)
                 {
+                    GetVersiyon02B();
+                    segmentBgm266Cl = true; segmentTdt20 = true; segmentBgm745 = false;
                     recive = "RUSAPIS";
-                    version = "02B";
                 }
                 else if (exporterType == ParameterHelper.ExporterFactoryCode.RussiaApisPreDepartureForRussiaOverflyPaxLst)
                 {
+                    GetVersiyon02B();
+                    segmentBgm266Cl = true; segmentTdt34 = true; segmentBgm745 = false;
                     recive = "RUSAPIS";
+                }
+                else if (exporterType == ParameterHelper.ExporterFactoryCode.DenmarkApis || exporterType == ParameterHelper.ExporterFactoryCode.FinlandApis || exporterType == ParameterHelper.ExporterFactoryCode.RomaniaApis || exporterType == ParameterHelper.ExporterFactoryCode.QatarApis || exporterType == ParameterHelper.ExporterFactoryCode.JordanEdifactApis)
+                {
+                    GetVersiyon05B();
+                    recive = exporterType == ParameterHelper.ExporterFactoryCode.DenmarkApis ? "DKGOVAPI" : (exporterType == ParameterHelper.ExporterFactoryCode.FinlandApis ? "FIAPIS" : (exporterType == ParameterHelper.ExporterFactoryCode.UkraineApis ? "DKGOVAPI" : ""));
+                }
+                else if (exporterType == ParameterHelper.ExporterFactoryCode.JordanEdifactApis)
+                {
+                    GetVersiyon12B();
+                    recive = "JORAPIS";
+                }
+                else if (exporterType == ParameterHelper.ExporterFactoryCode.BelgiumApis || exporterType == ParameterHelper.ExporterFactoryCode.IraqApis)
+                {
+                    GetVersiyon15B();
+                    recive = exporterType == ParameterHelper.ExporterFactoryCode.BelgiumApis ? "BEGOVAPI" : (exporterType == ParameterHelper.ExporterFactoryCode.IraqApis ? "IQGOVAPI" : "");
+                }
+
+                void GetVersiyon02B()
+                {
+                    segmentBgm266 = false; segmentBgm266Cl = false; segmentRffTn = false; segmentTdt34 = false; segmentMeaWt = false; segmentLoc22 = false; segmentRffCr = false; segmentMeaCt = false; segmentGei = false; segmentFtx = false; segmentRffAbo = false; segmentRffSea = false;
                     version = "02B";
                 }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.SwissEdifactApis)
+                void GetVersiyon05B()
                 {
-                    recive = "HDQCH2X";
-                    version = "02B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.UkraineApis)
-                { 
-                    recive = "DKGOVAPI";
+                    segmentBgm266 = false; segmentBgm266Cl = false; segmentTdt34 = false; segmentMeaWt = false; segmentRffTn = false; segmentRffCr = false;
                     version = "05B";
                 }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.QatarApis)
+                void GetVersiyon12B()
                 {
-                    recive = "";
-                    version = "05B";
+                    segmentBgm266 = false; segmentBgm266Cl = false; segmentTdt34 = false; segmentMeaWt = false; segmentLoc22 = false;
+                    version = "12B";
+                }
+                void GetVersiyon15B()
+                {
+                    segmentBgm266 = false; segmentBgm266Cl = false; segmentRffTn = false; segmentTdt34 = false; segmentMeaWt = false; segmentLoc22 = false; segmentRffCr = false;
+                    version = "15B";
                 }
                 #endregion
-                ///////////////
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.GermanyEdifactPaxLst)
-                {
-                    //Germany Apiste ung olmadığı için false 
-                    segmentUng = false;
-                    recive = "BPOLAPIS";
-                    version = "02B";
-                }
-                else if (exporterType == ParameterHelper.ExporterFactoryCode.GermanyCsvPaxLst)
-                {
-                    apisMessageList.Add(flight.AirlineIataCode + ";" + flight.FlightNumber.ToString().PadLeft(4, '0') + ";" + flight.DepartureIata + ";" + ((DateTime)flight.Sobt).AddSeconds(adepOfset).ToString("yyMMddHHmm", enUs) + ";"+ flight.DestinationIata + ";" + ((DateTime)flight.Sldt).AddSeconds(adesOfset == 0 ? adepOfset : adesOfset).ToString("yyMMddHHmm", enUs)+ ";" + passengerList.Count()+";;;;;;<CR+LF>");
 
-                    if(passengerList.Count()<=99)
-                    {
-                        foreach (var passengerDocs in passengerDocsList)
-                        {
-                            apisMessageList.Add(passengerDocs.Surname + ";" + passengerDocs.Name + ";" + passengerDocs.GenderCode + ";" + passengerDocs.Dob.Value.ToString("yyMMdd") + ";" + passengerDocs.NationalityCode + ";" + flight.DepartureIata + ";" + flight.DestinationIata + ";" + passengerDocs.DocTypeCode + ";" + passengerDocs.DocNumber + ";" + passengerDocs.DocIssuerNationalityCode);
-
-
-                            if (!string.IsNullOrEmpty(passengerDocs.DocNumber) || !string.IsNullOrEmpty(passengerDocs.DocTypeCode)) 
-                                apisMessagePassengerList.Add((passengerDocs.DocTypeCode == "O" ? (!string.IsNullOrEmpty(passengerDocs.CustomDocTypeCode) ? (passengerDocs.CustomDocTypeCode.Substring(0, 1).ToUpper() == "I" || passengerDocs.CustomDocTypeCode.Substring(0, 1).ToUpper() == "P" ? passengerDocs.CustomDocTypeCode.Substring(0, 1) : (passengerDocs.CustomDocTypeCode.ToUpper() == "AC" ? passengerDocs.CustomDocTypeCode : "F")) : "F") : (!string.IsNullOrEmpty(passengerDocs.DocTypeCode) ? passengerDocs.DocTypeCode.Substring(0, 1).ToUpper() : "F")) + "+" + passengerDocs.DocNumber + "'");
-                       
-                        }
-                    }
-
-                    }
-
-                    #region UN/EDIFACT
-                    if (segmentUna && (exporterType == ParameterHelper.ExporterFactoryCode.DenmarkApis))
+                if (segmentUna && (exporterType == ParameterHelper.ExporterFactoryCode.DenmarkApis))
                     apisMessageHeaderList.Add("UNA:+.?*'");
                 if (segmentUna && (exporterType != ParameterHelper.ExporterFactoryCode.DenmarkApis))
                     apisMessageHeaderList.Add("UNA:+.? '");
-
-                //Germany Apiste 
-
                 if (segmentUnb && (exporterType != ParameterHelper.ExporterFactoryCode.JordanEdifactApis && exporterType != ParameterHelper.ExporterFactoryCode.NetherlandsPaxLst))
                     apisMessageHeaderList.Add("UNB+UNOA:4+BRIDGEIS" + "+" + recive + "+" + nowDate + "+" + confirmation1 + "'");
                 if (segmentUnb && (exporterType == ParameterHelper.ExporterFactoryCode.JordanEdifactApis || exporterType == ParameterHelper.ExporterFactoryCode.NetherlandsPaxLst))
- 
                     apisMessageHeaderList.Add("UNB+UNOA:4+BRIDGEIS" + "+" + recive + "+" + nowDate + "+" + confirmation1 + "++" + recive + "'");
-                
-                //&& (exporterType != ParameterHelper.ExporterFactoryCode.GermanyEdifactPaxLst)
                 if (segmentUng)
                     apisMessageHeaderList.Add("UNG+PAXLST+BRIDGEIS" + "+" + recive + "+" + nowDate + "+" + confirmation2 + "+UN+D:" + version + "'");
-                //
                 if (segmentUnh)
-                    //":UN:IATA+" şeklinde olup ardından nowDate gerekli ama YYMMDDHHmmss şeklinde.
-                    //Ayrıca 3 segmente ayrılmış segmentlerin kuralları var "+01" "+02" "+03" olabiliyor. F ve C harfi koyulabiliyor ne olduklarını araştır.
                     apisMessageHeaderList.Add("UNH+" + confirmation3 + "+PAXLST:D:" + version + ":UN:IATA'");
                 if (segmentBgm745)
                     apisMessageHeaderList.Add("BGM+745'");
@@ -238,8 +166,8 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                     apisMessageHeaderList.Add("LOC+87+" + flight.DestinationIata + "'");
                 if (segmentDtm232 && flight.Sldt.HasValue)
                     apisMessageHeaderList.Add("DTM+232:" + ((DateTime)flight.Sldt).AddSeconds(adesOfset == 0 ? adepOfset : adesOfset).ToString("yyMMddHHmm", enUs) + ":201'");
-                    #endregion
-                    foreach (var passengerDocs in passengerDocsList)
+
+                foreach (var passengerDocs in passengerDocsList)
                 {
                     var passengerDoco = PassengerDocoService.GetPassengerDoco(passengerDocs.PassengerId).FirstOrDefault();
                     var passengerDoca = PassengerDocaService.GetPassengerDocaWithPaging(new PassengerDocaPagingRequest { PassengerId = passengerDocs.PassengerId, PageNumber = 1, PageSize = 2000 }).Item1.FirstOrDefault();

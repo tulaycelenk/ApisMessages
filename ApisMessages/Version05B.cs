@@ -8,9 +8,10 @@ namespace ApisMessages
 {
     public abstract class Version05B : ApisBase 
     {
-        una = "UNA:+.?"; 
-        public override void Una() {  }
-        public override void Unb() { }
+       
+        public override void Una() { tw.AppendLine("'"); }
+
+        public override void Unb() {}
         public override void Ung() { }
         public override void Unh() { }
         public override void Bgm() { }

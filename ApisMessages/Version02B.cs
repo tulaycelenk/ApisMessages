@@ -8,5 +8,6 @@ namespace ApisMessages
 {
     class Version02B
     {
+
     }
 }

@@ -189,8 +189,7 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                        
                         }
                     }
-
-                    }
+                }
 
                     #region UN/EDIFACT
                     if (segmentUna && (exporterType == ParameterHelper.ExporterFactoryCode.DenmarkApis))

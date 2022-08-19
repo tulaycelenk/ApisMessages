@@ -9,10 +9,17 @@ using System.Threading.Tasks;
 namespace ApisMessages
 {
     public abstract class ApisBase 
-    {  
-            TextWriter tw = new StreamWriter();
-            #region variables
-        public string una = "UNA:+.?";
+    {
+        
+        #region variables
+
+        Random r = new Random();
+        int BZcode = r.Next(100000000, 999999999);
+        int GEcode = r.Next(100000000, 999999999);
+        int HTcode = r.Next(100000000, 999999999);
+        int unique = r.Next(100000000, 999999999);
+
+            public string una = "UNA:+.?";
             public string unaEnd = "*'";
             public string unb = "UNB+UNOA:4+";
             public string unbEnd = "++APIS";
@@ -23,6 +30,7 @@ namespace ApisMessages
             public string unhMid2 = ":UN:IATA+";
             public string unhEnd = "+01:F'";
             public string bgm = "BGM+745'";
+            public string rfftn = "RFF+TN:";
             public string nadms = "NAD+MS+++";
             public string com = "COM+SUPPORT AT BRIDGEIST.COM:EM'";
             public string tdt20 = "TDT+20+";
@@ -38,16 +46,20 @@ namespace ApisMessages
             public string loc179 = "LOC+179+";
             public string nat2 = "NAT+2+";
             public string rffavf = "RFF+AVF:";
+            public string rffabo = "RFF+ABO:";
+            public string rffsea = "RFF+SEA:";
+            public string rffaea = "RFF+AEA:";
             public string doc = "DOC+";
             public string dtm36 = "DTM+36+";
             public string loc91 = "LOC+91+";
             public string cnt42 = "CNT+42:";
             public string unt = "UNT+";
-            public string une1 = "UNE+1+";
-            public string unz1 = "UNZ+1+";
+            public string une = "UNE+1+";
+            public string unz = "UNZ+1+";
+            public string apos = "'";
             #endregion 
 
-            public virtual void Una() { tw.Write(una); }
+            public virtual string Una() { tw.Write(una); }
             public virtual void Unb() { tw.Write(unb); }
             public virtual void Ung() { tw.Write(ung); }
             public virtual void Unh() { tw.Write(unh); }
@@ -67,14 +79,16 @@ namespace ApisMessages
             public virtual void Loc179() { tw.Write(loc179); }
             public virtual void Nat2() { tw.Write(nat2); }
             public virtual void Rffavf() { tw.Write(una); }
+            public virtual void Rffabo() { tw.Write(una); }
+            public virtual void Rffsea() { tw.Write(una); }
+            public virtual void Rffaea() { tw.Write(una); }
             public virtual void Doc() { tw.Write(una); }
             public virtual void Dtm36() { tw.Write(una); }
             public virtual void Loc91() { tw.Write(una); }
             public virtual void Cnt42() { tw.Write(una); }
             public virtual void Unt() { tw.Write(una); }
-            public virtual void Une1() { tw.Write(una); }
-            public virtual void Unz1() { tw.Write(una); }
-
+            public virtual void Une() { tw.WriteLine(une+ GEcode.ToString()+apos); }
+            public virtual void Unz() { tw.WriteLine(unz+BZcode.ToString()+apos); }
         }
     }
 }            

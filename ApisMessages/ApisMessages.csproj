@@ -48,8 +48,8 @@
   <ItemGroup>
     <Compile Include="Apis.cs" />
     <Compile Include="ApisBase.cs" />
+    <Compile Include="ApisEdifactHelper.cs" />
     <Compile Include="ApisNew.cs" />
-    <Compile Include="Country.cs" />
     <Compile Include="Denmark_EDIFACT.cs" />
     <Compile Include="ExporterFactoryCode.cs" />
     <Compile Include="Finland.cs" />
@@ -65,13 +65,13 @@
     <Compile Include="GermanyCSV.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IExporter.cs" />
-    <Compile Include="ModifiableEntity.cs" />
     <Compile Include="ParameterHelper.cs" />
     <Compile Include="PassengerDocs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Version02B.cs" />
     <Compile Include="Version05B.cs" />
+    <Compile Include="Version12B.cs" />
     <Compile Include="Version15B.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

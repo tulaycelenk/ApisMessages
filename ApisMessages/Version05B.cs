@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AviatorManager.ViewModel.Aodb;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,37 +7,20 @@ using System.Threading.Tasks;
 
 namespace ApisMessages
 {
-    public abstract class Version05B : ApisBase 
+    public class Version05B : ApisEdifactHelper 
     {
-       
-        public override void Una() { tw.AppendLine("'"); }
+        //versiyonlar helper ı içerecek tw a atılacak ve ülkeler bunu kullanacak 
+        //ülkere göre değişiklikler ülkelerde yapılacak 
+        public byte[] Export(FlightResponse flight, string exporterType, bool singleOrMultiPaxLst)
+        { 
 
-        public override void Unb() {}
-        public override void Ung() { }
-        public override void Unh() { }
-        public override void Bgm() { }
-        public override void Nadms() { }
-        public override void Com() { }
-        public override void Tdt20() { }
-        public override void Loc125() { }
-        public override void Loc87() { }
-        public override void Dtm189() { }
-        public override void Dtm232() { }
-        public override void Nadfl() { }
-        public override void Att() { }
-        public override void Dtm329() { }
-        public override void Loc22() { }
-        public override void Loc178() { }
-        public override void Loc179() { }
-        public override void Nat2() { }
-        public override void Rffavf() { }
-        public override void Doc() { }
-        public override void Dtm36() { }
-        public override void Loc91() { }
-        public override void Cnt42() { }
-        public override void Unt() { }
-        public override void Une1() { }
-        public override void Unz1() { }
+        
+        }
+
+
+
+        private string version = "05B";
+
 
     }
 }

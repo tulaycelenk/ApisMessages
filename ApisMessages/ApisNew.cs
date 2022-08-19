@@ -177,6 +177,8 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                     if (segmentNadFl && !string.IsNullOrEmpty(passengerDocs.Surname))
                         apisMessagePassengerList.Add("NAD+FL+++" + (!string.IsNullOrEmpty(passengerDocs.Surname) ? (passengerDocs.Surname.Length > 35 ? passengerDocs.Surname.Substring(0, 35) : passengerDocs.Surname) : "") + (!string.IsNullOrEmpty(passengerDocs.Name) ? (":" + (passengerDocs.Name.Length > 35 ? passengerDocs.Name.Substring(0, 35) : passengerDocs.Name).Replace(" ", ":")) : "") + (passengerDoca != null ? ("+" + (!string.IsNullOrEmpty(passengerDoca.ResidenceAddress) ? passengerDoca.ResidenceAddress.Length > 35 ? passengerDoca.ResidenceAddress.Substring(0, 35) : passengerDoca.ResidenceAddress : "") + "+" + passengerDoca.ResidenceCity + "+" + passengerDoca.ResidenceZipCode + "+" + passengerDoca.ResidenceCountryIso3Code) : "") + "'");
                     if (segmentAtt2 && !string.IsNullOrEmpty(passengerDocs.GenderCode))
+
+                    //15b İÇİN X TÜRÜ DE VAR
                         apisMessagePassengerList.Add("ATT+2++" + (passengerDocs.GenderCode == PaxGenderCode.FemaleChild ? "F" : (passengerDocs.GenderCode == PaxGenderCode.MaleChild ? "M" : (passengerDocs.GenderCode == PaxGenderCode.Child || passengerDocs.GenderCode == PaxGenderCode.Infant ? "U" : passengerDocs.GenderCode))) + "'");
                     else
                         apisMessagePassengerList.Add("ATT+2++U'");
@@ -184,6 +186,8 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                         apisMessagePassengerList.Add("DTM+329:" + passengerDocs.Dob.Value.ToString("yyMMdd") + "'");
                     if (segmentMeaCt && passenger != null && passenger.BagCount > 0)
                         apisMessagePassengerList.Add("MEA+CT++:" + passenger.BagCount + "'");
+
+                    //CONDITIONAL -MEASUREMENTS-
                     if (segmentMeaWt && passenger != null && passenger.BagTotalWeight > 0)
                         apisMessagePassengerList.Add("MEA+WT++KGM:" + passenger.BagTotalWeight + "'");
                     if (segmentGei)

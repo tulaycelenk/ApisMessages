@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace ApisMessages
 {
-    class Version15B:ApisBase
+    class Version12B : ApisBase
     {
-        private string version = "15B";
-        public string rfftn = "RFF+TN:";
+        private string version = "12B";
+
+       
+
     }
 }

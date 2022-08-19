@@ -8,6 +8,6 @@ namespace ApisMessages
 {
     class Germany_EDIFACT:Version02B
     {
-
+        //DEU yu D yap
     }
 }

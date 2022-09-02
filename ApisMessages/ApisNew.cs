@@ -34,7 +34,7 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                 RestHelper rst = new RestHelper(new UrlProviderWithToken(), new HeaderProvider());
                 var adesTimezone = rst.GetTimezoneOffsetByAirport(flight.AdesId, DateTime.UtcNow);
                 var adesOfset = adesTimezone != null ? TimeSpan.FromSeconds(adesTimezone.GmtOffset).TotalSeconds : 0;
-                var adepTimezone = rst.GetTimezoneOffsetByAirport(flight.AdepId, DateTime.UtcNow);
+               
                 var adepOfset = adepTimezone != null ? TimeSpan.FromSeconds(adepTimezone.GmtOffset).TotalSeconds : 0;
 
                 if (adesTimezone == null)

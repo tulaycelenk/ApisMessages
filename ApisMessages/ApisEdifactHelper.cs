@@ -8,7 +8,7 @@ namespace ApisMessages
 {
     public static class ApisEdifactHelper
     {
-
+        8
         Random r = new Random();
         public const string BZcode = r.Next(100000000, 999999999).ToString();
         public const string GEcode = r.Next(100000000, 999999999).ToString();
@@ -18,18 +18,21 @@ namespace ApisMessages
         public const string version02B = "02B";
         public const string version05B = "05B";
         public const string version12B = "12B";
+        public const string version14B = "14B";
         public const string version15B = "15B";
 
         public const string una = "UNA:+.?";
         public const string unaEnd = "*'";
-        public const string unb = "UNB+UNOA:4+";
+        public const string unb = "UNB+UNOA:4+BRIDGEIS";
+        public const string sender = "BPOLAPIS";
+
         public const string unbEnd = "++APIS";
         public const string ung = "UNG+PAXLST+";
         public const string ungEnd = "+UN+D:";
         public const string unh = "UNH+";
         public const string unhMid1 = " +PAXLST:D:";
         public const string unhMid2 = ":UN:IATA+";
-        public const string unhEnd = "+01:F'";
+        //public const string unhEnd = "+01:F'";
         public const string bgm745 = "BGM+745'";//Indicates passenger list
         public const string bgm250 = "BGM+250'";//Indicates crew list declaration
         public const string bgm266 = "BGM+266'";//Indicates change in flight status@
@@ -37,7 +40,7 @@ namespace ApisMessages
         public const string bgm655 = "BGM+655'";//Indicates Gate Pass
 
         public const string rffTn = "RFF+TN:";
-        public const string nadMs = "NAD+MS+++";
+        public const string nadMs = "NAD+MS+++DEGIRMENCI:GAMZE'";
         public const string com = "COM+SUPPORT AT BRIDGEIST.COM:EM'";
         public const string tdt20 = "TDT+20+";//For arriving or departing flight
         public const string tdt34 = "TDT+34+";// Over-flight.
@@ -46,6 +49,7 @@ namespace ApisMessages
         public const string loc92 = "LOC+92+";//Indicates the next airport in the country of destination, For a multi-sector progressive flight
         public const string loc130 = "LOC+130+";//Indicates the final destination airport in the country of destination, For a multi-sector progressive flight
         public const string dtm189 = "DTM+189+";//Indicates the scheduled departure date and time of the flight
+        public const string dtm189End = ":201'";
         public const string dtm232 = "DTM+232+";//Indicates the scheduled arrival date of flight 
         public const string nadFl = "NAD+FL+++";
         public const string nadDdt = "NAD+DDT+++";//Indicates an ‘In Transit’ Crew member.                                               
@@ -93,5 +97,11 @@ namespace ApisMessages
         public const string une = "UNE+1+";
         public const string unz = "UNZ+1+";
         public const string apos = "'";
+        public const string colon = ":";
+        public const string plus = "+";
+        public const string threePlus = "+++";
+        public const string threeColon = ":::";
+
+
     }
 }

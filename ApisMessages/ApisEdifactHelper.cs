@@ -65,8 +65,8 @@ namespace ApisMessages
         public const string meaCt = "MEA+CT++:";//number of bags
         public const string meaWtKg = "MEA+WT++KGM:";//weight(kg)
         public const string meaWtLbr = "MEA+WT++LBR:";//weight(pounds)
-        public const string gei173 = "GEI+4+173";//Indicates that the information contained for this passenger has been verified. 
-        public const string gei174 = "GEI+4+174";//for information not verified
+        public const string gei173 = "GEI+4+173'";//Indicates that the information contained for this passenger has been verified. 
+        public const string gei174 = "GEI+4+174'";//for information not verified
         public const string ftx = "FTX+BAG+++";
         public const string loc22 = "LOC+22+";//For intransit passengers or crew members or for progressive clearance flights, indicates the airport where a passenger or crew member will complete clearance procedures, 
         public const string loc174 = "LOC+174+";//Indicates the country of residence as per ICAO Document 9303 ISO 3166 (3 alpha).
@@ -101,7 +101,5 @@ namespace ApisMessages
         public const string plus = "+";
         public const string threePlus = "+++";
         public const string threeColon = ":::";
-
-
     }
 }

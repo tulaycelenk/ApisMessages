@@ -66,6 +66,9 @@
     <Compile Include="IEntity.cs" />
     <Compile Include="IExporter.cs" />
     <Compile Include="ParameterHelper.cs" />
+    <Compile Include="Passenger.cs" />
+    <Compile Include="PassengerDoca.cs" />
+    <Compile Include="PassengerDoco.cs" />
     <Compile Include="PassengerDocs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

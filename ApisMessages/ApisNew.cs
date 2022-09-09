@@ -227,6 +227,7 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                     if (segmentNat2 && !string.IsNullOrEmpty(passengerDocs.NationalityCode))
                         apisMessagePassengerList.Add("NAT+2+" + passengerDocs.NationalityCode + "'");
                     if (segmentRffAvf && !string.IsNullOrEmpty(passengerDocs.PassengerPnr))
+                    if (segmentRffAvf && !string.IsNullOrEmpty(passengerDocs.PassengerPnr))
                         apisMessagePassengerList.Add("RFF+AVF:" + passengerDocs.PassengerPnr + "'");
                     if (segmentRffAbo && passengerDocs.PassengerId > 0)
                         apisMessagePassengerList.Add("RFF+ABO:BR" + passengerDocs.PassengerId.ToString().PadLeft(10, '0') + "'");

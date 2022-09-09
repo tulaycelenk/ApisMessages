@@ -83,7 +83,7 @@ namespace ApisMessages
         public const string rffAvf = "RFF+AVF:"; //Indicates passenger reservation reference number
         public const string rffAbo = "RFF+ABO:";//Indicates Unique Passenger Reference
         public const string rffSea = "RFF+SEA:";//Indicates assigned Seat identification
-        public const string rffAea = "RFF+AEA:";//Government agency reference number (Optionally issued by a state to facilitate booking and travel).
+        public const string rffAea = "RFF+AEA:";//Government agency22 reference number (Optionally issued by a state to facilitate booking and travel).
         public const string rffCr = "RFF+CR:";//Customer Reference Number. Frequent flyer or frequent traveler reference
         public const string docP = "DOC+P+";
         public const string docV = "DOC+V+";

@@ -107,25 +107,42 @@ namespace ApisMessages
                         //residense
                         tw.WriteLine(loc174 + passengerDoca.ResidenceCountryIso3Code + apos);
 
+                        //communication 
+                        //nationality
+                        tw.WriteLine(nat2+passengerDocs.NationalityCode + apos);
+
                         //place of birth
-                        tw.WriteLine(loc180 + passengerDoca.ResidenceCountryIso3Code + apos);
+                        tw.WriteLine(+ apos);
 
                         //communication number of the passenger
+                        tw.WriteLine(+ apos);
 
                         //nationality 
+                        tw.WriteLine(+ apos);
 
                         //passenger reservation number
-
+                        tw.WriteLine(+ apos);
                         //unique passenger reference number(rffAbo)
+                        tw.WriteLine(+ apos);
+
                         //assigned seat(rffSea)
-
+                        tw.WriteLine(+ apos);
                         //governement agency reference number (rffAea)
-                        //doc type (docp or docv)
-                        // expiry date of the official travel doc dtm36
-                        //issue date of the other doc used for travel dtm182
-                        //issuing country code loc91
-                        //issued city loc91 with three colon
+                        tw.WriteLine(+ apos);
 
+                        //doc type (docp or docv)
+                        tw.WriteLine(+ apos);
+
+                        // expiry date of the official travel doc dtm36
+                        tw.WriteLine(+ apos);
+                        //issue date of the other doc used for travel dtm182
+                        tw.WriteLine(+ apos);
+
+                        //issuing country code loc91
+                        tw.WriteLine(+ apos);
+
+                        //issued city loc91 with three colon
+                        tw.WriteLine(+ apos);
 
 
 

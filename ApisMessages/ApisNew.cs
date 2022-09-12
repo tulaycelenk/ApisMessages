@@ -245,6 +245,7 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                     {
                         if (segmentDoc && (!string.IsNullOrEmpty(passengerDoco.DocNumber) || !string.IsNullOrEmpty(passengerDoco.DocTypeCode)))
                             apisMessagePassengerList.Add("DOC+" + (passengerDoco.DocTypeCode == "O" ? (!string.IsNullOrEmpty(passengerDoco.CustomDocTypeCode) ? (passengerDoco.CustomDocTypeCode.Substring(0, 1).ToUpper() == "I" || passengerDoco.CustomDocTypeCode.Substring(0, 1).ToUpper() == "P" ? passengerDoco.CustomDocTypeCode.Substring(0, 1) : (passengerDoco.CustomDocTypeCode.ToUpper() == "AC" ? passengerDoco.CustomDocTypeCode : "F")) : "F") : (!string.IsNullOrEmpty(passengerDoco.DocTypeCode) ? passengerDoco.DocTypeCode.Substring(0, 1).ToUpper() : "F")) + "+" + passengerDoco.DocNumber + "'");
+
                         if (segmentDtm36 && passengerDoco.Doe.HasValue)
                             apisMessagePassengerList.Add("DTM+36:" + passengerDoco.Doe.Value.ToString("yyMMdd") + "'");
                         if (segmentLoc91 && !string.IsNullOrEmpty(passengerDoco.DocForNationalityCode))

@@ -14,9 +14,9 @@ namespace ApisMessages
         public byte[] Export(FlightResponse flight, string exporterType, bool singleOrMultiPaxLst)
         {
             IEnumerable<PassengerDocs> passengerDocsList = PassengerDocsService.GetPassengerWithDocsInformation(new PassengerDocsPagingRequest() { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 }).Item1.Where(p => (p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Flown || p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Boarded) && p.PassengerId != 0).OrderBy(s => s.Surname);
-            
+
             IEnumerable<Passenger> passengerList = PassengerService.QueryPassengersJoined(new PassengerPagingRequest { FlightId = flight.Id }).Where(p => p.PaxStatusCode == ParameterHelper.PaxStatusCode.Flown || p.PaxStatusCode == ParameterHelper.PaxStatusCode.Boarded || p.PaxStatusCode == ParameterHelper.PaxStatusCode.CheckedIn).OrderBy(s => s.Surname);
-           
+
             IEnumerable<Baggage> passengerBaggageList = BaggageService.QueryBaggagesJoined(new BaggagePagingRequest { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 });
 
             using (var ms = new MemoryStream())
@@ -45,25 +45,28 @@ namespace ApisMessages
                     tw.WriteLine(bgm745);
                     tw.WriteLine(nadMs);
                     tw.WriteLine(com);
+                    //BURAYA FLIGHT KONTROLLERİ İÇİN İF GELSİN Mİ?
                     tw.WriteLine(tdt20 + flight.AirlineIataCode + flight.FlightNumber.ToString() + threePlus + flight.AirlineIataCode + apos);
                     tw.WriteLine(loc125 + flight.DepartureIata + apos);
-                    tw.WriteLine(dtm189 + ((DateTime)flight.Sobt).AddSeconds(adepOfset).ToString("yyMMddHHmm", enUs) + dtm189End);  
+                    //YUKARIDA SOBT TANIMLADIK
+                    tw.WriteLine(dtm189 + ((DateTime)flight.Sobt).AddSeconds(adepOfset).ToString("yyMMddHHmm", enUs) + dtm189End);
                     tw.WriteLine(loc87 + flight.DestinationIata + apos);
                     tw.WriteLine(dtm232 + yearToDay);
 
                     foreach (var passengerDocs in passengerDocsList)
                     {
                         var passengerDoco = PassengerDocoService.GetPassengerDoco(passengerDocs.PassengerId).FirstOrDefault();
-                        var passengerDoca = PassengerDocaService.GetPassengerDocaWithPaging(new PassengerDocaPagingRequest { PassengerId = passengerDocs.PassengerId, PageNumber = 1, PageSize = 20
-                            00 }).Item1.FirstOrDefault();
+                        var passengerDoca = PassengerDocaService.GetPassengerDocaWithPaging(new PassengerDocaPagingRequest { PassengerId = passengerDocs.PassengerId, PageNumber = 1, PageSize = 2000 }).Item1.FirstOrDefault();
                         var passenger = passengerList.Where(filter => filter.Id == passengerDocs.PassengerId).FirstOrDefault();
                         var passengerBaggages = passengerBaggageList.Where(filter => filter.PassengerId == passengerDocs.PassengerId).OrderBy(s => s.BagTag);
                         //Name NAD
+                        //YA İSİM YANLIŞ GİRİLDİYSE ÖRNEĞİN PASAPORTTA YAZAN GİBİ DEĞİLSE? PASAPORT OKUYUCULARINDAN GELEN İSMİ ALIYOR MUYUZ? KARŞILAŞTIRIYOR MUYUZ?
+
 
                         //Gender ATT
-                        tw.WriteLine(passengerDocs.GenderCode == PaxGenderCode.FemaleChild || passengerDocs.GenderCode == PaxGenderCode.Female  ? attF : (passengerDocs.GenderCode == PaxGenderCode.MaleChild || passengerDocs.GenderCode == PaxGenderCode.Male ? attM : (passengerDocs.GenderCode == PaxGenderCode.Child || passengerDocs.GenderCode == PaxGenderCode.Infant ? attU )));
+                        tw.WriteLine(passengerDocs.GenderCode == PaxGenderCode.FemaleChild || passengerDocs.GenderCode == PaxGenderCode.Female ? attF : (passengerDocs.GenderCode == PaxGenderCode.MaleChild || passengerDocs.GenderCode == PaxGenderCode.Male ? attM : (passengerDocs.GenderCode == PaxGenderCode.Child || passengerDocs.GenderCode == PaxGenderCode.Infant ? attU )));
                         //Date of Birth DTM
-                        tw.WriteLine(dtm329+passengerDocs.Dob.Value.ToString("yyMMdd")+apos);
+                        tw.WriteLine(dtm329 + passengerDocs.Dob.Value.ToString("yyMMdd") + apos);
 
                         //Baggage MEA
                         tw.WriteLine(meaCt + passenger.BagCount + apos);
@@ -97,67 +100,109 @@ namespace ApisMessages
                                 apisMessagePassengerList.Add(sequentialBagTagText);
                         }
                         //destination
-                        tw.WriteLine(loc178 + flight.DepartureIata + apos);
-                        //arrival
-                        tw.WriteLine(loc179 + flight.DestinationIata + apos);
+                        if (!string.IsNullOrEmpty(flight.DepartureIata))
+                            tw.WriteLine(loc178 + flight.DepartureIata + apos);
 
                         //intransit passenger
-                        tw.WriteLine(loc22 + flight.DestinationIata + apos);
+                        if (!string.IsNullOrEmpty(flight.DestinationIata))
+                            tw.WriteLine(loc22 + flight.DestinationIata + apos);
+
+                        //arrival
+                        if (!string.IsNullOrEmpty(flight.DestinationIata))
+                            tw.WriteLine(loc179 + flight.DestinationIata + apos);
 
                         //residense
-                        tw.WriteLine(loc174 + passengerDoca.ResidenceCountryIso3Code + apos);
-
-                        //communication 
-                        //nationality
-                        tw.WriteLine(nat2+passengerDocs.NationalityCode + apos);
+                        if (!string.IsNullOrEmpty(passengerDoca.ResidenceCountryIso3Code))
+                            tw.WriteLine(loc174 + passengerDoca.ResidenceCountryIso3Code + apos);
 
                         //place of birth
-                        tw.WriteLine(+ apos);
+                        tw.WriteLine(loc180 + threeColon + PLACE OF BIRTH + apos);
 
                         //communication number of the passenger
-                        tw.WriteLine(+ apos);
+                        tw.WriteLine(com + NUMBER:TE + apos);
 
-                        //nationality 
-                        tw.WriteLine(+ apos);
+                        //nationality
+                        if (!string.IsNullOrEmpty(passengerDocs.NationalityCode))
+                            tw.WriteLine(nat2 + passengerDocs.NationalityCode + apos);
 
                         //passenger reservation number
-                        tw.WriteLine(+ apos);
+                        tw.WriteLine(rffAvf + RESERVATION NUMBER + apos);
+
                         //unique passenger reference number(rffAbo)
-                        tw.WriteLine(+ apos);
+                        tw.WriteLine(rffAbo + PASSENGER REFERENCE NUM + apos);
 
                         //assigned seat(rffSea)
-                        tw.WriteLine(+ apos);
+                        if (!string.IsNullOrEmpty(passengerDocs.PassengerSeatNumber))
+                            tw.WriteLine(rffSea + passengerDocs.PassengerSeatNumber.PadLeft(3, '0') + apos);
+
                         //governement agency reference number (rffAea)
-                        tw.WriteLine(+ apos);
+                        tw.WriteLine(rffAea + GOVERNEMENT AGENCY REF NUMBER apos);
 
                         //doc type (docp or docv)
-                        tw.WriteLine(+ apos);
+                        if (!string.IsNullOrEmpty(passengerDocs.DocNumberr) || !string.IsNullOrEmpty(passengerDocs.DocTypeCode)) { 
+                            switch (passengerDocs.DocTypeCode)
+                            {
+                                case "P":
+                                    tw.WriteLine(docP+ passengerDocs.DocNumber + apos);
+                                    break;
+                                case "V":
+                                    tw.WriteLine(docV + passengerDocs.DocNumber + apos);
+                                    break;
+                                case "A":
+                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    break;
+                                case "C":
+                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    break;
+                                case "I":
+                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    break;
+                                case "AC":
+                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    break;
+                                case "IP":
+                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    break;
+                                case "M":
+                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    break;
+                                default:
+                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    break;
+                        } 
+                    }
 
                         // expiry date of the official travel doc dtm36
-                        tw.WriteLine(+ apos);
+                        if (passengerDoco.Doe.HasValue)
+                            tw.WriteLine(dtm36 + passengerDoco.Doe.Value.ToString("yyMMdd") + apos);
+
                         //issue date of the other doc used for travel dtm182
-                        tw.WriteLine(+ apos);
+                        tw.WriteLine(dtm182 + OTHER DOCUMENTs ISSUE DATE + apos);
 
                         //issuing country code loc91
-                        tw.WriteLine(+ apos);
+                        if (!string.IsNullOrEmpty(passengerDoco.DocForNationalityCode))
+                            tw.WriteLine(loc91 + passengerDoco.DocForNationalityCode + apos);
 
                         //issued city loc91 with three colon
-                        tw.WriteLine(+ apos);
-
-
-
-
+                        tw.WriteLine(loc91 + threeColon + doc FOR CITY CODE + apos);
 
                     }
 
                     tw.WriteLine(cnt42 + passengerDocsList.Count() + apos);
-                    int totalRow = (passengerDocsList.Count() * 10) + 9;
                     tw.WriteLine(unt + totalRow + plus + HTcode + apos);
                     tw.WriteLine(une + GEcode + apos);
                     tw.WriteLine(unz + BZcode + apos);
-                    string deneme = $"vkjfdnv{airlineName }";
+                    //string deneme = $"vkjfdnv{airlineName }";
                 }
+                tw.Flush();
+                ms.Position = 0;
+                var fileSingle = Encoding.UTF8.GetString(ms.ToArray());
+                Logger.Default.Append(LogLevel.Debug, fileSingle);
+                ms.Position = 0;
+                return ms.ToArray();
             }
+            
         }
+       
     }
 }

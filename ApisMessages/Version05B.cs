@@ -39,8 +39,8 @@ namespace ApisMessages
                 {
                     #region Single Part PAXLST
                     tw.WriteLine(una);
-                    tw.WriteLine(unb + airlineName + yearToMin + plus + BZcode + unbEnd);
-                    tw.WriteLine(ung + airlineName + "{receive}" + yearToMin + plus + flight.DestinationIata + GEcode + ungEnd + version05B);
+                    tw.WriteLine(unb + sender + airlineName + yearToMin + plus + BZcode+apos);
+                    tw.WriteLine(ung + airlineName + yearToMin + plus + GEcode + typeVersionNum + version05B);
                     tw.WriteLine(unh + HTcode + unhMid1 + version05B + unhMid2);
                     tw.WriteLine(bgm745);
                     tw.WriteLine(nadMs);
@@ -60,10 +60,13 @@ namespace ApisMessages
                         var passenger = passengerList.Where(filter => filter.Id == passengerDocs.PassengerId).FirstOrDefault();
                         var passengerBaggages = passengerBaggageList.Where(filter => filter.PassengerId == passengerDocs.PassengerId).OrderBy(s => s.BagTag);
                         //Name NAD
-                        //YA İSİM YANLIŞ GİRİLDİYSE ÖRNEĞİN PASAPORTTA YAZAN GİBİ DEĞİLSE? PASAPORT OKUYUCULARINDAN GELEN İSMİ ALIYOR MUYUZ? KARŞILAŞTIRIYOR MUYUZ?
+                        //ELLE GİRİLEN BİLGİLERLE DÖKÜMANDAKİ BİLGİLER KIYASLANIYOR MU. YANLIŞ GİRİLDİYSE ÖRNEĞİN PASAPORTTA YAZAN GİBİ DEĞİLSE? PASAPORT OKUYUCULARINDAN GELEN İSMİ ALIYOR MUYUZ? KARŞILAŞTIRIYOR MUYUZ?
+                        if (!string.IsNullOrEmpty(passengerDocs.Surname))
+                            tw.WriteLine(nadFl + (passengerDocs.Surname.Length > 35 ? passengerDocs.Surname.Substring(0, 35) : passengerDocs.Surname) : "") + (!string.IsNullOrEmpty(passengerDocs.Name) ? (":" + (passengerDocs.Name.Length > 35 ? passengerDocs.Name.Substring(0, 35) : passengerDocs.Name).Replace(" ", ":")) : "") + (passengerDoca != null ? ("+" + (!string.IsNullOrEmpty(passengerDoca.ResidenceAddress) ? passengerDoca.ResidenceAddress.Length > 35 ? passengerDoca.ResidenceAddress.Substring(0, 35) : passengerDoca.ResidenceAddress : "") + "+" + passengerDoca.ResidenceCity + "+" + passengerDoca.ResidenceZipCode + "+" + passengerDoca.ResidenceCountryIso3Code) : "") + apos);
 
 
                         //Gender ATT
+                        //passengerDocs.GenderCod UI DAN GELEN VERİNİN KARŞILIĞI MI?
                         tw.WriteLine(passengerDocs.GenderCode == PaxGenderCode.FemaleChild || passengerDocs.GenderCode == PaxGenderCode.Female ? attF : (passengerDocs.GenderCode == PaxGenderCode.MaleChild || passengerDocs.GenderCode == PaxGenderCode.Male ? attM : (passengerDocs.GenderCode == PaxGenderCode.Child || passengerDocs.GenderCode == PaxGenderCode.Infant ? attU )));
                         //Date of Birth DTM
                         tw.WriteLine(dtm329 + passengerDocs.Dob.Value.ToString("yyMMdd") + apos);
@@ -177,6 +180,7 @@ namespace ApisMessages
                             tw.WriteLine(dtm36 + passengerDoco.Doe.Value.ToString("yyMMdd") + apos);
 
                         //issue date of the other doc used for travel dtm182
+                        //ONAYLANMA TARİHİ TABLOLARDA YOK
                         tw.WriteLine(dtm182 + OTHER DOCUMENTs ISSUE DATE + apos);
 
                         //issuing country code loc91
@@ -184,6 +188,7 @@ namespace ApisMessages
                             tw.WriteLine(loc91 + passengerDoco.DocForNationalityCode + apos);
 
                         //issued city loc91 with three colon
+                        //DÖKUMANIN ONAYLANDIĞI ŞEHİR TABLOLARDA YOK
                         tw.WriteLine(loc91 + threeColon + doc FOR CITY CODE + apos);
 
                     }

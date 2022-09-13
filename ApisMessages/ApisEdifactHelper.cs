@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ApisMessages
 {
-    public static class ApisEdifactHelper
+    public  class ApisEdifactHelper
     {
-        8
+        
         Random r = new Random();
         public const string BZcode = r.Next(100000000, 999999999).ToString();
         public const string GEcode = r.Next(100000000, 999999999).ToString();
@@ -23,15 +23,15 @@ namespace ApisMessages
 
         public const string una = "UNA:+.?";
         public const string unaEnd = "*'";
-        public const string unb = "UNB+UNOA:4+BRIDGEIS";
+        public const string unb = "UNB+UNOA:4+";
         public const string sender = "BPOLAPIS";
 
         public const string unbEnd = "++APIS";
         public const string ung = "UNG+PAXLST+";
-        public const string ungEnd = "+UN+D:";
+        public const string typeVersionNum= "+UN+D:";
         public const string unh = "UNH+";
         public const string unhMid1 = " +PAXLST:D:";
-        public const string unhMid2 = ":UN:IATA+";
+        public const string unhMid2 = ":UN:IATA'";
         //public const string unhEnd = "+01:F'";
         public const string bgm745 = "BGM+745'";//Indicates passenger list
         public const string bgm250 = "BGM+250'";//Indicates crew list declaration

@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace ApisMessages
 {
-    public  class ApisEdifactHelper
-    {
-        
+    public class ApisEdifactHelper
+    {        
         Random r = new Random();
         public const string BZcode = r.Next(100000000, 999999999).ToString();
         public const string GEcode = r.Next(100000000, 999999999).ToString();
@@ -24,24 +23,33 @@ namespace ApisMessages
         public const string una = "UNA:+.?";
         public const string unaEnd = "*'";
         public const string unb = "UNB+UNOA:4+";
-        public const string sender = "BPOLAPIS";
+        public const string sender = "BRIDGEIS+";
 
         public const string unbEnd = "++APIS";
         public const string ung = "UNG+PAXLST+";
         public const string typeVersionNum= "+UN+D:";
         public const string unh = "UNH+";
         public const string unhMid1 = " +PAXLST:D:";
-        public const string unhMid2 = ":UN:IATA'";
-        //public const string unhEnd = "+01:F'";
-        public const string bgm745 = "BGM+745'";//Indicates passenger list
-        public const string bgm250 = "BGM+250'";//Indicates crew list declaration
-        public const string bgm266 = "BGM+266'";//Indicates change in flight status@
-        public const string bgm336 = "BGM+366'";//Indicates master crew list declaration
-        public const string bgm655 = "BGM+655'";//Indicates Gate Pass
+        public const string unhMid2 = ":UN:IATA";
+        public const string unhSinglePart = "+01:F'";
+        //********************************************************************
+        public const string bgm745 = "BGM+745";//Indicates passenger list
+        public const string bgm250 = "BGM+250";//Indicates crew list declaration
+        //public const string bgm266 = "BGM+266";//Indicates change in flight status@ JUST FOR INTERACTIVE APIS MESSAGES
+        public const string bgm336 = "BGM+366";//Indicates master crew list declaration
+        public const string bgm655 = "BGM+655";//Indicates Gate Pass
 
+        public const string changePassengerData = "CP'";
+        public const string cancelReservation = "XR'";
+        public const string reductionOnParty = "RP'";
+        public const string crewFlightClose = "CL'";
+        public const string idCrewNotOnBoard = "CLNB'";
+        public const string idCrewOnBoard  = "CLOB'";
+
+        //********************************************************************
         public const string rffTn = "RFF+TN:";
         public const string nadMs = "NAD+MS+++DEGIRMENCI:GAMZE'";
-        public const string com = "COM+SUPPORT AT BRIDGEIST.COM:EM'";
+        public const string com= "COM+212 211 1003:TE+212 211 1004:FX+SUPPORT BRIDGEIST COM:EM'";
         public const string tdt20 = "TDT+20+";//For arriving or departing flight
         public const string tdt34 = "TDT+34+";// Over-flight.
         public const string loc125 = "LOC+125+";//Indicates the last airport of departure from a foreign country
@@ -49,12 +57,12 @@ namespace ApisMessages
         public const string loc92 = "LOC+92+";//Indicates the next airport in the country of destination, For a multi-sector progressive flight
         public const string loc130 = "LOC+130+";//Indicates the final destination airport in the country of destination, For a multi-sector progressive flight
         public const string dtm189 = "DTM+189+";//Indicates the scheduled departure date and time of the flight
-        public const string dtm189End = ":201'";
+        public const string dtmEnd = ":201'";
         public const string dtm232 = "DTM+232+";//Indicates the scheduled arrival date of flight 
         public const string nadFl = "NAD+FL+++";
         public const string nadDdt = "NAD+DDT+++";//Indicates an ‘In Transit’ Crew member.                                               
         public const string nadFm = "NAD+FM+++";//Indicates a Crew Member
-        public const string nadDdu = "NAD+FM+++";//ndicates an ‘In Transit’ Passenger.                                                 
+        public const string nadDdu = "NAD+FM+++";//Indicates an ‘In Transit’ Passenger.                                                 
                                   //gender info
         public const string attF = "ATT+2++F'";
         public const string attM = "ATT+2++M'";
@@ -81,13 +89,20 @@ namespace ApisMessages
         public const string emp5 = "EMP+1+CR5:";//pilots on board but not on duty
         public const string nat2 = "NAT+2+";
         public const string rffAvf = "RFF+AVF:"; //Indicates passenger reservation reference number
-        public const string rffAbo = "RFF+ABO:";//Indicates Unique Passenger Reference
+
+        //NEDEN BR YAZILMIŞ?
+        public const string rffAbo = "RFF+ABO:BR";//Indicates Unique Passenger Reference
         public const string rffSea = "RFF+SEA:";//Indicates assigned Seat identification
         public const string rffAea = "RFF+AEA:";//Government agency22 reference number (Optionally issued by a state to facilitate booking and travel).
         public const string rffCr = "RFF+CR:";//Customer Reference Number. Frequent flyer or frequent traveler reference
         public const string docP = "DOC+P+";
         public const string docV = "DOC+V+";
         public const string docI = "DOC+I+";
+        public const string docC = "DOC+C+";
+        public const string docIP = "DOC+IP+";
+        public const string docAC = "DOC+AC+";
+        public const string docA = "DOC+A+";
+        public const string docF = "DOC+F+";
         public const string dtm36 = "DTM+36:";
         public const string dtm182 = "DTM+182:";
         public const string loc91 = "LOC+91+";

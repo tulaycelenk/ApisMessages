@@ -152,25 +152,25 @@ namespace ApisMessages
                                     tw.WriteLine(docV + passengerDocs.DocNumber + apos);
                                     break;
                                 case "A":
-                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    tw.WriteLine(docA + passengerDocs.DocNumber + apos);
                                     break;
                                 case "C":
-                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    tw.WriteLine(docI + passengerDocs.DocNumber + apos);
                                     break;
                                 case "I":
-                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    tw.WriteLine(docAC+ passengerDocs.DocNumber + apos);
                                     break;
                                 case "AC":
-                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    tw.WriteLine(docIP + passengerDocs.DocNumber + apos);
                                     break;
                                 case "IP":
-                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    tw.WriteLine(docC+ passengerDocs.DocNumber + apos);
                                     break;
                                 case "M":
-                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    tw.WriteLine(docF + passengerDocs.DocNumber + apos);
                                     break;
                                 default:
-                                    tw.WriteLine(doc + passengerDocs.DocNumber + apos);
+                                    tw.WriteLine(docF + passengerDocs.DocNumber + apos);
                                     break;
                         } 
                     }
@@ -194,7 +194,7 @@ namespace ApisMessages
                     }
 
                     tw.WriteLine(cnt42 + passengerDocsList.Count() + apos);
-                    tw.WriteLine(unt + totalRow + plus + HTcode + apos);
+                    tw.WriteLine(unt + $"{fromUNHtoUNTTotalRow}" + plus + HTcode + apos);
                     tw.WriteLine(une + GEcode + apos);
                     tw.WriteLine(unz + BZcode + apos);
                     //string deneme = $"vkjfdnv{airlineName }";

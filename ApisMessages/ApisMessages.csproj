@@ -50,6 +50,7 @@
     <Compile Include="ApisBase.cs" />
     <Compile Include="ApisEdifactHelper.cs" />
     <Compile Include="ApisNew.cs" />
+    <Compile Include="Demo.cs" />
     <Compile Include="Denmark_EDIFACT.cs" />
     <Compile Include="ExporterFactoryCode.cs" />
     <Compile Include="Finland.cs" />
@@ -61,10 +62,12 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Germany.cs" />
+    <Compile Include="GermanyNew.cs" />
     <Compile Include="Germany_EDIFACT.cs" />
     <Compile Include="GermanyCSV.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IExporter.cs" />
+    <Compile Include="MessageOperation.cs" />
     <Compile Include="ParameterHelper.cs" />
     <Compile Include="Passenger.cs" />
     <Compile Include="PassengerDoca.cs" />
@@ -76,6 +79,7 @@
     <Compile Include="Version05B.cs" />
     <Compile Include="Version12B.cs" />
     <Compile Include="Version15B.cs" />
+    <Compile Include="YeniApisMesaj.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

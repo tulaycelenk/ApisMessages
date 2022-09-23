@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ApisMessages
 {
-    class Demo:ApisEdifactHelper
+    class DenmarkNew:ApisEdifactHelper
     {
         List<string> ApisMessageList = new List<string>();
         List<string> ApisMessageHeaderList = new List<string>();
@@ -14,7 +14,7 @@ namespace ApisMessages
         List<string> ApisMessageFooterList = new List<string>();
 
         public byte[] Export(FlightResponse flight, string exporterType, bool singleOrMultiPaxLst)
-        {         
+        {
 
             IEnumerable<PassengerDocs> passengerDocsList = PassengerDocsService.GetPassengerWithDocsInformation(new PassengerDocsPagingRequest() { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 }).Item1.Where(p => (p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Flown || p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Boarded) && p.PassengerId != 0).OrderBy(s => s.Surname);
 
@@ -22,21 +22,22 @@ namespace ApisMessages
 
             IEnumerable<Baggage> passengerBaggageList = BaggageService.QueryBaggagesJoined(new BaggagePagingRequest { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 });
 
-                var enUs = new CultureInfo("en-US");
-                var airlineName = flight.AirlineName.Trim().Replace(" ", string.Empty);
-                airlineName = !string.IsNullOrEmpty(airlineName) ? (airlineName.Length > 35 ? airlineName = airlineName.Substring(0, 35) : airlineName) : "";
+            var enUs = new CultureInfo("en-US");
+            var airlineName = flight.AirlineName.Trim().Replace(" ", string.Empty);
+            airlineName = !string.IsNullOrEmpty(airlineName) ? (airlineName.Length > 35 ? airlineName = airlineName.Substring(0, 35) : airlineName) : "";
 
-                var sobt = flight.Sobt.HasValue ? flight.Sobt.Value.ToString("yyMMddHHmm", enUs) : "";
-                var sldt = flight.Sldt.HasValue ? flight.Sldt.Value.ToString("yyMMddHHmm", enUs) : "";
+            var sobt = flight.Sobt.HasValue ? flight.Sobt.Value.ToString("yyMMddHHmm", enUs) : "";
+            var sldt = flight.Sldt.HasValue ? flight.Sldt.Value.ToString("yyMMddHHmm", enUs) : "";
 
-                var yearToMin = DateTime.Now.ToString("yyMMdd", enUs) + ":" + DateTime.Now.ToString("HHmm", enUs);
-                var yearToDay = DateTime.Now.ToString("yyMMdd", enUs);
-                RestHelper rst = new RestHelper(new UrlProviderWithToken(), new HeaderProvider());
-                var adepTimezone = rst.GetTimezoneOffsetByAirport(flight.AdepId, DateTime.UtcNow);
-                var adepOfset = adepTimezone != null ? TimeSpan.FromSeconds(adepTimezone.GmtOffset).TotalSeconds : 0;
-                int fromUNHtoUNTTotalRow = 0;
+            var yearToMin = DateTime.Now.ToString("yyMMdd", enUs) + ":" + DateTime.Now.ToString("HHmm", enUs);
+            var yearToDay = DateTime.Now.ToString("yyMMdd", enUs);
+            RestHelper rst = new RestHelper(new UrlProviderWithToken(), new HeaderProvider());
+            var adepTimezone = rst.GetTimezoneOffsetByAirport(flight.AdepId, DateTime.UtcNow);
+            var adepOfset = adepTimezone != null ? TimeSpan.FromSeconds(adepTimezone.GmtOffset).TotalSeconds : 0;
+            int fromUNHtoUNTTotalRow = 0;
 
-                if (exportRequest.PartType == "S"){
+            if (exportRequest.PartType == "S")
+            {
                 #region Single Part PAXLST
                 ApisMessageHeaderList.Add(una);
                 ApisMessageHeaderList.Add(unb + sender + airlineName + yearToMin + plus + BZcode + apos);
@@ -196,30 +197,28 @@ namespace ApisMessages
                 ApisMessageFooterList.Add(unt + $"{fromUNHtoUNTTotalRow}" + plus + HTcode + apos);
                 ApisMessageFooterList.Add(une + GEcode + apos);
                 ApisMessageFooterList.Add(unz + BZcode + apos);
-                    //string deneme = $"vkjfdnv{airlineName }";
+                //string deneme = $"vkjfdnv{airlineName }";
 
-                    //ApisMessageList listesine Header-PassengerList-Foother bilgileri eklenip yazdırılıyor.
-                    ApisMessageList.AddRange(ApisMessageHeaderList);
-                    ApisMessageList.AddRange(ApisMessagePassengerList);
-                    //Multi part UNH segmentinde UNt segmentine kadar olan segment sayısı
-                    fromUNHtoUNTTotalRow = ApisMessageList.Count() - 2; // -2: -(UNA UNB UNG) + UNT
-                    ApisMessageList.AddRange(ApisMessageFooterList);
-
-
+                //ApisMessageList listesine Header-PassengerList-Foother bilgileri eklenip yazdırılıyor.
+                ApisMessageList.AddRange(ApisMessageHeaderList);
+                ApisMessageList.AddRange(ApisMessagePassengerList);
+                //Multi part UNH segmentinde UNt segmentine kadar olan segment sayısı
+                fromUNHtoUNTTotalRow = ApisMessageList.Count() - 2; // -2: -(UNA UNB UNG) + UNT
+                ApisMessageList.AddRange(ApisMessageFooterList);
 
 
 
 
-                    /*
-                    var fileSingle = Encoding.UTF8.GetString(ms.ToArray());
-                    Logger.Default.Append(LogLevel.Debug, fileSingle);
-                    ms.Position = 0;
-                    return ms.ToArray();
-                    
-                     */
-                }
+
+
+                /*
+                var fileSingle = Encoding.UTF8.GetString(ms.ToArray());
+                Logger.Default.Append(LogLevel.Debug, fileSingle);
+                ms.Position = 0;
+                return ms.ToArray();
+
+                 */
+            }
 
         }
-
     }
-}

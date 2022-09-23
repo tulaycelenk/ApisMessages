@@ -51,6 +51,7 @@
     <Compile Include="ApisEdifactHelper.cs" />
     <Compile Include="ApisNew.cs" />
     <Compile Include="Demo.cs" />
+    <Compile Include="Countries\DenmarkNew.cs" />
     <Compile Include="Denmark_EDIFACT.cs" />
     <Compile Include="ExporterFactoryCode.cs" />
     <Compile Include="Finland.cs" />
@@ -62,7 +63,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Germany.cs" />
-    <Compile Include="GermanyNew.cs" />
+    <Compile Include="Countries\GermanyNew.cs" />
     <Compile Include="Germany_EDIFACT.cs" />
     <Compile Include="GermanyCSV.cs" />
     <Compile Include="IEntity.cs" />

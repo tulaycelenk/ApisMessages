@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ApisMessages
 {
+    //PAXLST IMPLEMENTATION GUIDE ANNEX III 28 June 2010
     public class Version05B : ApisEdifactHelper
     {
         //versiyonlar helper ı içerecek tw a atılacak ve ülkeler bunu kullanacak 
@@ -19,18 +20,15 @@ namespace ApisMessages
 
             IEnumerable<Baggage> passengerBaggageList = BaggageService.QueryBaggagesJoined(new BaggagePagingRequest { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 });
 
-            using (var ms = new MemoryStream())
-            {
+
                 TextWriter tw = new StreamWriter(ms);
-                var enUs = new CultureInfo("en-US");
                 var airlineName = flight.AirlineName.Trim().Replace(" ", string.Empty);
                 airlineName = !string.IsNullOrEmpty(airlineName) ? (airlineName.Length > 35 ? airlineName = airlineName.Substring(0, 35) : airlineName) : "";
 
                 var sobt = flight.Sobt.HasValue ? flight.Sobt.Value.ToString("yyMMddHHmm", enUs) : "";
                 var sldt = flight.Sldt.HasValue ? flight.Sldt.Value.ToString("yyMMddHHmm", enUs) : "";
 
-                var yearToMin = DateTime.Now.ToString("yyMMdd", enUs) + ":" + DateTime.Now.ToString("HHmm", enUs);
-                var yearToDay = DateTime.Now.ToString("yyMMdd", enUs);
+                
                 RestHelper rst = new RestHelper(new UrlProviderWithToken(), new HeaderProvider());
                 var adepTimezone = rst.GetTimezoneOffsetByAirport(flight.AdepId, DateTime.UtcNow);
                 var adepOfset = adepTimezone != null ? TimeSpan.FromSeconds(adepTimezone.GmtOffset).TotalSeconds : 0;

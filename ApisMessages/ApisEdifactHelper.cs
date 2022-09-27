@@ -7,7 +7,13 @@ using System.Threading.Tasks;
 namespace ApisMessages
 {
     public class ApisEdifactHelper
-    {        
+    {
+        
+        public const string enUs = new CultureInfo("en-US");
+
+        public const string yearToMin = DateTime.Now.ToString("yyMMdd", enUs) + ":" + DateTime.Now.ToString("HHmm", enUs);
+        public const string yearToDay = DateTime.Now.ToString("yyMMdd", enUs);
+
         Random r = new Random();
         public const string BZcode = r.Next(100000000, 999999999).ToString();
         public const string GEcode = r.Next(100000000, 999999999).ToString();
@@ -62,7 +68,7 @@ namespace ApisMessages
         public const string nadFl = "NAD+FL+++";
         public const string nadDdt = "NAD+DDT+++";//Indicates an ‘In Transit’ Crew member.                                               
         public const string nadFm = "NAD+FM+++";//Indicates a Crew Member
-        public const string nadDdu = "NAD+FM+++";//Indicates an ‘In Transit’ Passenger.                                                 
+       ?? public const string nadDdu = "NAD+";//Indicates an ‘In Transit’ Passenger.                                                 
                                   //gender info
         public const string attF = "ATT+2++F'";
         public const string attM = "ATT+2++M'";

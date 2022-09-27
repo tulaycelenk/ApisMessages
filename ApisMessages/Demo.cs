@@ -12,7 +12,8 @@ namespace ApisMessages
         List<string> ApisMessageHeaderList = new List<string>();
         List<string> ApisMessagePassengerList = new List<string>();
         List<string> ApisMessageFooterList = new List<string>();
-
+        //ÖNEMLİ!!! receiver ülkelerde tanımlancak
+        string receiver;
         public byte[] Export(FlightResponse flight, string exporterType, bool singleOrMultiPaxLst)
         {         
 
@@ -39,8 +40,8 @@ namespace ApisMessages
                 if (exportRequest.PartType == "S"){
                 #region Single Part PAXLST
                 ApisMessageHeaderList.Add(una);
-                ApisMessageHeaderList.Add(unb + sender + airlineName + yearToMin + plus + BZcode + apos);
-                ApisMessageHeaderList.Add(ung + airlineName + yearToMin + plus + GEcode + typeVersionNum + version05B);
+                ApisMessageHeaderList.Add(unb + sender + receiver + yearToMin + plus + BZcode + apos);
+                ApisMessageHeaderList.Add(ung + sender + receiver + plus + GEcode + typeVersionNum + version05B);
                 ApisMessageHeaderList.Add(unh + HTcode + unhMid1 + version05B + unhMid2);
                 ApisMessageHeaderList.Add(bgm745);
                 ApisMessageHeaderList.Add(nadMs);

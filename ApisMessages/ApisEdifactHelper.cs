@@ -38,7 +38,6 @@ namespace ApisMessages
         public const string unhMid1 = " +PAXLST:D:";
         public const string unhMid2 = ":UN:IATA";
         public const string unhSinglePart = "+01:F'";
-        //********************************************************************
         public const string bgm745 = "BGM+745";//Indicates passenger list
         public const string bgm250 = "BGM+250";//Indicates crew list declaration
         //public const string bgm266 = "BGM+266";//Indicates change in flight status@ JUST FOR INTERACTIVE APIS MESSAGES
@@ -52,7 +51,7 @@ namespace ApisMessages
         public const string idCrewNotOnBoard = "CLNB'";
         public const string idCrewOnBoard  = "CLOB'";
 
-        //********************************************************************
+        
         public const string rffTn = "RFF+TN:";
         public const string nadMs = "NAD+MS+++DEGIRMENCI:GAMZE'";
         public const string com= "COM+212 211 1003:TE+212 211 1004:FX+SUPPORT BRIDGEIST COM:EM'";
@@ -68,7 +67,7 @@ namespace ApisMessages
         public const string nadFl = "NAD+FL+++";
         public const string nadDdt = "NAD+DDT+++";//Indicates an ‘In Transit’ Crew member.                                               
         public const string nadFm = "NAD+FM+++";//Indicates a Crew Member
-       ?? public const string nadDdu = "NAD+";//Indicates an ‘In Transit’ Passenger.                                                 
+        public const string nadDdu = "NAD+DDU+++";//Indicates an ‘In Transit’ Passenger.                                                 
                                   //gender info
         public const string attF = "ATT+2++F'";
         public const string attM = "ATT+2++M'";

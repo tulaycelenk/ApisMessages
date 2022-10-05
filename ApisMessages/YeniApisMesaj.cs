@@ -439,6 +439,7 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                     apisMessageFootherList[2] = une + partIdentifier + confirmation2 + apos;
                     apisMessageFootherList[3] = unz + partIdentifier + confirmation1 + apos;
                     apisMessageList.AddRange(apisMessageFootherList);
+
                 }
             }
             else

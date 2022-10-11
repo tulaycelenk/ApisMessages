@@ -12,12 +12,13 @@ namespace ApisMessages
     {
         //versiyonlar helper ı içerecek tw a atılacak ve ülkeler bunu kullanacak 
         //ülkere göre değişiklikler ülkelerde yapılacak 
-
         List<string> apisMessageList = new List<string>();
         List<string> apisMessageHeaderList = new List<string>();
         List<string> apisMessagePassengerList = new List<string>();
         List<string> apisMessageFooterList = new List<string>();
+        List<string> apisMessageDividedPassengerList = new List<string>();
 
+        
         //TANIMI YAPILMALI
         private string receiver;
 
@@ -42,27 +43,6 @@ namespace ApisMessages
             int apisMessagePassengerListCharecterCount = 0;
             int apisMessageFootherListCharecterCount = 0;
             #region Single Part PAXLST
-            string UNA = unb + sender + receiver + yearToMin + plus + BZcode + apos;
-            apisMessageHeaderList.Add(una);
-            if (exportRequest.PartType == "S")
-            //TEKRAR YAZMAK YERİNE STRİNG OLARAK OLUŞTURUP REPLACE YAPSAK?
-            {
-                apisMessageHeaderList.Add(unb + sender + receiver + yearToMin + plus + BZcode + apos);
-                apisMessageHeaderList.Add(ung + sender + receiver + yearToMin + plus + GEcode + typeVersionNum + version05B);
-                apisMessageHeaderList.Add(unh + HTcode + unhMid1 + version05B + unhMid2);
-
-            }
-            else if (exportRequest.PartType == "M")
-            {
-                apisMessageHeaderList.Add(unb + sender + receiver + yearToMin + plus + partIdentifier + BZcode + apos);
-                apisMessageHeaderList.Add(ung + sender + receiver + yearToMin + plus + partIdentifier + GEcode + typeVersionNum + version05B);
-                apisMessageHeaderList.Add(unh + HTcode + unhMid1 + version05B + unhMid2 + partIdentifier + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + (partIdentifier == 1 ? ":C" : "") + apos);
-                partIdentifier++;
-
-            }
-            apisMessageHeaderList.Add(bgm745);
-            apisMessageHeaderList.Add(nadMs);
-            apisMessageHeaderList.Add(com);
             //BURAYA FLIGHT KONTROLLERİ İÇİN İF GELSİN Mİ?
             apisMessageHeaderList.Add(tdt20 + flight.AirlineIataCode + flight.FlightNumber.ToString() + threePlus + flight.AirlineIataCode + apos);
             apisMessageHeaderList.Add(loc125 + flight.DepartureIata + apos);
@@ -134,30 +114,31 @@ namespace ApisMessages
                 //residense
                 if (!string.IsNullOrEmpty(passengerDoca.ResidenceCountryIso3Code))
                     apisMessagePassengerList.Add(loc174 + passengerDoca.ResidenceCountryIso3Code + apos);
-
+                /*
                 //place of birth
                 apisMessagePassengerList.Add(loc180 + threeColon + PLACE OF BIRTH + apos);
-
+               
                 //communication number of the passenger
                 apisMessagePassengerList.Add(com + NUMBER:TE + apos);
+                 */
 
                 //nationality
                 if (!string.IsNullOrEmpty(passengerDocs.NationalityCode))
                     apisMessagePassengerList.Add(nat2 + passengerDocs.NationalityCode + apos);
-
+                /*
                 //passenger reservation number
                 apisMessagePassengerList.Add(rffAvf + RESERVATION NUMBER + apos);
 
                 //unique passenger reference number(rffAbo)
                 apisMessagePassengerList.Add(rffAbo + PASSENGER REFERENCE NUM + apos);
-
+                */
                 //assigned seat(rffSea)
                 if (!string.IsNullOrEmpty(passengerDocs.PassengerSeatNumber))
                     apisMessagePassengerList.Add(rffSea + passengerDocs.PassengerSeatNumber.PadLeft(3, '0') + apos);
-
+                /*
                 //governement agency reference number (rffAea)
                 apisMessagePassengerList.Add(rffAea + GOVERNEMENT AGENCY REF NUMBER apos);
-
+                */
                 //doc type (docp or docv)
                 if (!string.IsNullOrEmpty(passengerDocs.DocNumberr) || !string.IsNullOrEmpty(passengerDocs.DocTypeCode))
                 {
@@ -197,18 +178,21 @@ namespace ApisMessages
                 if (passengerDoco.Doe.HasValue)
                     apisMessagePassengerList.Add(dtm36 + passengerDoco.Doe.Value.ToString("yyMMdd") + apos);
 
+                /*
                 //issue date of the other doc used for travel dtm182
                 //ONAYLANMA TARİHİ TABLOLARDA YOK
                 apisMessagePassengerList.Add(dtm182 + OTHER DOCUMENTs ISSUE DATE + apos);
+                */
 
                 //issuing country code loc91
                 if (!string.IsNullOrEmpty(passengerDoco.DocForNationalityCode))
                     apisMessagePassengerList.Add(loc91 + passengerDoco.DocForNationalityCode + apos);
 
+                /*
                 //issued city loc91 with three colon
                 //DÖKUMANIN ONAYLANDIĞI ŞEHİR TABLOLARDA YOK
                 apisMessagePassengerList.Add(loc91 + threeColon + doc FOR CITY CODE + apos);
-
+                */
             }
 
             //apisMessageList listesine Header-PassengerList-Foother bilgileri eklenip yazdırılıyor.
@@ -223,9 +207,17 @@ namespace ApisMessages
             apisMessageFooterList.Add(unz + BZcode + apos);
             apisMessageList.AddRange(apisMessageFooterList);
 
-            if (exportRequest.PartType == "M")
-            {
-                /* HEADR VE FOOTER CHAR COUNT 
+            //TEKRAR YAZMAK YERİNE STRİNG OLARAK OLUŞTURUP REPLACE YAPSAK?
+         
+            if (exportRequest.PartType == "M") { 
+         
+                apisMessageHeaderList[1] = unb + sender + receiver + yearToMin + plus + partIdentifier + BZcode + apos;
+                apisMessageHeaderList[2] = ung + sender + receiver + yearToMin + plus + partIdentifier + GEcode + typeVersionNum + version05B;
+                apisMessageHeaderList[2] = unh + HTcode + unhMid1 + version05B + unhMid2 + partIdentifier + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + (partIdentifier == 1 ? ":C" : "") + apos;
+                partIdentifier++;
+                 
+            
+                /* HEADER VE FOOTER CHAR COUNT 
                 foreach (var apisMessageHeader in apisMessageHeaderList){
                     apisMessageHeaderListCharecterCount += apisMessageHeader.Length;
                 }
@@ -250,17 +242,72 @@ namespace ApisMessages
                     {
                         for (var j = apisMessageDividedPassengerList.Count(); j >= 0; j--)
                         {
-                            if (apisMessageDividedPassengerList[j - 1].Substring(0, 6) == ("NAD+FL")) { // NAD+FL:Passenger Name ve Surname bilgilerinin yazıldığı segment. Karakter sayısında aşım olduğu zaman yolcu bilgileri farklı partlarda olmasın diye bu kontrol eklendi. 
+                            if (apisMessageDividedPassengerList[j - 1].Contains(nadFl)) { 
                                 i = j - 1;
                                 j = 0;
                             }
                         }
-
-                        return apisMessageList;
+                        //UNH segmenti için part number eklendi
+                        apisMessageHeaderList[1] = unb + sender + plus + receiver + plus + yearToMin + plus + partIdentifier + BZcode + "++" + receiver + apos;
+                        apisMessageHeaderList[2] = ung + sender + plus + (!string.IsNullOrEmpty(recive2) ? recive2 : receiver) + plus + yearToMin + plus + partIdentifier + GEcode + typeVersionNum + version05B + apos;
+                        apisMessageHeaderList[3] = unh + HTcode + unhMid1 + version05B + unhMid2 + partIdentifier + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + (partIdentifier == 1 ? ":C" : "") + apos;
+                        //apisMessageList listesine Header-PassengerList-Foother bilgileri eklenip yazdırılıyor.
+                        apisMessageList.AddRange(apisMessageHeaderList);
+                        for (var a = 0; a < i; a++)
+                        {
+                            apisMessageList.Add(apisMessageDividedPassengerList[a]);
+                            apisMessagePassengerList.Remove(apisMessageDividedPassengerList[a]);
+                        }
+                        //Multi part UNH segmentinde UNt segmentine kadar olan segment sayısı
+                        fromUNHtoUNTTotalRow = apisMessageList.Count() - 3; // -3: UNA-UNB-UNG
+                        apisMessageFooterList[1] = unt + partIdentifier + (fromUNHtoUNTTotalRow + 2) + plus + HTcode + apos; // +2: CNT-UNT
+                        apisMessageFooterList[2] = une + partIdentifier + GEcode + apos;
+                        apisMessageFooterList[3] = unz + partIdentifier + BZcode + apos;
+                        apisMessageList.AddRange(apisMessageFooterList);
+                        //partları ayırmak için eklendi.
+                        apisMessageList.Add("*******************************************************************");
+                        apisMessageDividedPassengerList = new List<string>();
+                        apisMessagePassengerListCharecterCount = 0;
+                        i = -1;
+                        partIdentifier++;
                     }
                 }
+                if (apisMessageDividedPassengerList.Count > 0 && apisMessagePassengerListCharecterCount < (1900 - apisMessageHeaderListCharecterCount - apisMessageFootherListCharecterCount))
+                {
+                    //UNH segmenti için part number eklendi
+                    apisMessageHeaderList[1] = unb + sender + plus + receiver + plus + yearToMin + plus + partIdentifier + BZcode + "++" + receiver + apos;
+                    apisMessageHeaderList[2] = ung + sender + plus + (!string.IsNullOrEmpty(recive2) ? recive2 : receiver) + plus + yearToMin + plus + partIdentifier + GEcode + typeVersionNum + version05B + apos;
+                    apisMessageHeaderList[3] = unh + HTcode + unhMid1 + version05B + unhMid2 + partIdentifier + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + ":F'";
+                    //apisMessageList listesine Header-PassengerList-Foother bilgileri eklenip yazdırılıyor.
+                    apisMessageList.AddRange(apisMessageHeaderList);
+                    apisMessageList.AddRange(apisMessageDividedPassengerList);
+                    //Multi part UNH segmentinde UNt segmentine kadar olan segment sayısı
+                    fromUNHtoUNTTotalRow = apisMessageList.Count() - 3; // -3: UNA-UNB-UNG
+                    apisMessageFooterList[1] = unt + partIdentifier + (fromUNHtoUNTTotalRow + 2) + plus + HTcode + apos; // +2: CNT-UNT
+                    apisMessageFooterList[2] = une + partIdentifier + GEcode + apos;
+                    apisMessageFooterList[3] = unz + partIdentifier + BZcode + apos;
+                    apisMessageList.AddRange(apisMessageFooterList);
 
+                }
             }
+            else
+            {
+                 Logger.Default.Append(LogLevel.Error, string.Format(ErrorResource.PartIdentifierUnknown, exportRequest.PartType));
+            }
+            #endregion Multi Part
+            apisMessageList.Add(partIdentifier.ToString().PadLeft(3, '0') + "PartIdentifier:");//PartIdentifier Mesaj liste eklyoruz.
+            return apisMessageList;
+
+        }
+        /// <summary>
+        /// Get Content Type
+        /// </summary>
+        /// <returns></returns>
+        public string GetContentType()
+        {
+            return "text/plain";
         }
     }
+        
+    
 }

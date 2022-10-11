@@ -23,7 +23,6 @@ namespace ApisMessages
         public const string version02B = "02B";
         public const string version05B = "05B";
         public const string version12B = "12B";
-        public const string version14B = "14B";
         public const string version15B = "15B";
 
         public const string una = "UNA:+.?";

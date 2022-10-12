@@ -42,7 +42,7 @@ namespace ApisMessages
             int apisMessageHeaderListCharecterCount = 0;
             int apisMessagePassengerListCharecterCount = 0;
             int apisMessageFootherListCharecterCount = 0;
-            #region Single Part PAXLST
+            #region HEADER 
             //BURAYA FLIGHT KONTROLLERİ İÇİN İF GELSİN Mİ?
             apisMessageHeaderList.Add(tdt20 + flight.AirlineIataCode + flight.FlightNumber.ToString() + threePlus + flight.AirlineIataCode + apos);
             apisMessageHeaderList.Add(loc125 + flight.DepartureIata + apos);
@@ -50,7 +50,8 @@ namespace ApisMessages
             apisMessageHeaderList.Add(dtm189 + ((DateTime)flight.Sobt).AddSeconds(adepOfset).ToString("yyMMddHHmm", enUs) + dtmEnd);
             apisMessageHeaderList.Add(loc87 + flight.DestinationIata + apos);
             apisMessageHeaderList.Add(dtm232 + yearToDay);
-
+            #endregion
+            #region PASSENGERS
             foreach (var passengerDocs in passengerDocsList)
             {
                 var passengerDoco = PassengerDocoService.GetPassengerDoco(passengerDocs.PassengerId).FirstOrDefault();
@@ -194,11 +195,12 @@ namespace ApisMessages
                 apisMessagePassengerList.Add(loc91 + threeColon + doc FOR CITY CODE + apos);
                 */
             }
-
+            #endregion
             //apisMessageList listesine Header-PassengerList-Foother bilgileri eklenip yazdırılıyor.
             apisMessageList.AddRange(apisMessageHeaderList);
             apisMessageList.AddRange(apisMessagePassengerList);
             //Multi part UNH segmentinde UNt segmentine kadar olan segment sayısı
+            #region FOOTER
             int fromUNHtoUNTTotalRow = apisMessageList.Count() - 2; // -2: -(UNA UNB UNG) + UNT
 
             apisMessageFooterList.Add(cnt42 + passengerDocsList.Count() + apos);
@@ -206,9 +208,9 @@ namespace ApisMessages
             apisMessageFooterList.Add(une + GEcode + apos);
             apisMessageFooterList.Add(unz + BZcode + apos);
             apisMessageList.AddRange(apisMessageFooterList);
-
+            #endregion
             //TEKRAR YAZMAK YERİNE STRİNG OLARAK OLUŞTURUP REPLACE YAPSAK?
-         
+
             if (exportRequest.PartType == "M") { 
          
                 apisMessageHeaderList[1] = unb + sender + receiver + yearToMin + plus + partIdentifier + BZcode + apos;

@@ -405,14 +405,13 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                         apisMessageHeaderList[3] = unh + confirmation3 + unhMid1 + version + unhMid2 + partIdentifier + confirmation4 + plus + partIdentifier.ToString().PadLeft(2, '0') + (partIdentifier == 1 ? ":C" : "") + apos;
                         //apisMessageList listesine Header-PassengerList-Foother bilgileri eklenip yazdırılıyor.
                         apisMessageList.AddRange(apisMessageHeaderList);
-                        for (var a = 0; a < i; a++)
+                        for (var a = i; a < apisMessageDividedPassengerList.Count(); a++)
                         {
                             apisMessageList.Add(apisMessageDividedPassengerList[a]);
-                            apisMessagePassengerList.Remove(apisMessageDividedPassengerList[a]);
                         }
                         //Multi part UNH segmentinde UNt segmentine kadar olan segment sayısı
                         fromUNHtoUNTTotalRow = apisMessageList.Count() - 3; // -3: UNA-UNB-UNG
-                        apisMessageFootherList[1] = unt + partIdentifier + (fromUNHtoUNTTotalRow + 2) + plus + confirmation3 + apos; // +2: CNT-UNT
+                        apisMessageFootherList[1] = unt + fromUNHtoUNTTotalRow  + plus + confirmation3 + apos; // +2: CNT-UNT
                         apisMessageFootherList[2] = une + partIdentifier + confirmation2 + apos;
                         apisMessageFootherList[3] = unz + partIdentifier + confirmation1 + apos;
                         apisMessageList.AddRange(apisMessageFootherList);
@@ -420,7 +419,6 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                         apisMessageList.Add("*******************************************************************");
                         apisMessageDividedPassengerList = new List<string>();
                         apisMessagePassengerListCharecterCount = 0;
-                        i = -1;
                         partIdentifier++;
                     }
                 }

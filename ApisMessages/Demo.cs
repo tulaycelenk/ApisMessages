@@ -14,6 +14,8 @@ namespace apisMessages
         List<string> apisMessagePassengerList = new List<string>();
         List<string> apisMessageFooterList = new List<string>();
         List<string> apisMessageDividedPassengerList = new List<string>();
+        List<string> tempList = new List<string>();
+        
         //ÖNEMLİ!!! receiver ülkelerde tanımlancak
         string receiver;
         public byte[] Export(FlightResponse flight, string exporterType, bool singleOrMultiPaxLst)
@@ -200,10 +202,10 @@ namespace apisMessages
 
                 }
                 apisMessageFooterList.Add(cnt42 + passengerDocsList.Count() + apos);
-                apisMessageList.AddRange(apisMessageHeaderList);
-                apisMessageList.AddRange(apisMessagePassengerList);
+                tempList.AddRange(apisMessageHeaderList);
+                tempList.AddRange(apisMessagePassengerList);
                 fromUNHtoUNTTotalRow = apisMessageList.Count() - 1; //  -(UNA UNB UNG) +(UNT CNT)
-
+                tempList.Clear();
                 //string deneme = $"vkjfdnv{airlineName }";
 
 
@@ -215,10 +217,9 @@ namespace apisMessages
                     apisMessageList.AddRange(apisMessageFooterList);
 
                 }
+
                 else if (exportRequest.PartType == "M")
                 {
-                    apisMessageList.Clear();
-
                     int apisMessageHeaderListCharecterCount = 0;
                     int apisMessagePassengerListCharecterCount = 0;
                     int apisMessageFootherListCharecterCount = 0;
@@ -233,58 +234,75 @@ namespace apisMessages
                     }
 
                     int maxCharForPassengers = 1900 - apisMessageHeaderListCharecterCount - apisMessageFootherListCharecterCount;
+
                     for (var i = 0; i < apisMessagePassengerList.Count(); i++)
                     {
-                        //2 NAD ARASINDAKİ SATIR SAYISINI BULUP ONUN KATINI ALALIM
-                        //SONUNCU PARTTA UNH SONUNA :F GELECEK
-
-                        apisMessagePassengerListCharecterCount += apisMessagePassengerList[i].Length + 1; // +1:Line 
-                        if (apisMessagePassengerListCharecterCount <= maxCharForPassengers)
-                           apisMessageDividedPassengerList.Add(apisMessagePassengerList[i]);
-                        
-                        else
+                        while (apisMessagePassengerListCharecterCount >= maxCharForPassengers)
                         {
-                            for (var j = apisMessageDividedPassengerList.Count(); j >= 0; j--)
-                            {
-                                if (apisMessageDividedPassengerList[j - 1].Contains(nadFl))
-                                {
-                                    i = j - 1;
-                                    j = 0;
-                                }
-                            }
-
-                            apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNB)] = unb + sender + receiver + yearToMin + plus + partIdentifier + BZcode + apos;
-                            apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNG)] = ung + sender + receiver + yearToMin + plus + partIdentifier + GEcode + typeVersionNum + version05B;
-                            if (apisMessageDividedPassengerList.Contains(apisMessagePassengerList.First()))
-                               apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNH)] = unh + HTcode + unhMid1 + version05B + unhMid2 + partIdentifier + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + ":C'";    
-                            
-                            else if (apisMessageDividedPassengerList.Contains(apisMessagePassengerList.Last()))
-                                apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNH)] = unh + HTcode + unhMid1 + version05B + unhMid2 + partIdentifier + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + ":F'";   
-                            
-                            else                            
-                                apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNH)] = unh + HTcode + unhMid1 + version05B + unhMid2;
-                            
-                            apisMessageList.AddRange(apisMessageHeaderList);
-
-                            for (var a = 0; a < i; a++)
-                            {
-                                apisMessageList.Add(apisMessageDividedPassengerList[a]);
-                                apisMessagePassengerList.Remove(apisMessageDividedPassengerList[a]);
-                            }
-
-                            apisMessageFooterList.Add(unt + fromUNHtoUNTTotalRow + plus + partIdentifier+ HTcode + apos);
-                            apisMessageFooterList.Add(une + partIdentifier + GEcode + apos);
-                            apisMessageFooterList.Add(unz + partIdentifier + BZcode + apos);
-
-                            apisMessageList.AddRange(apisMessageFooterList);
-
+                            apisMessagePassengerListCharecterCount += apisMessagePassengerList[i].Length + 1; // +1:Line 
+                            apisMessageDividedPassengerList.Add(apisMessagePassengerList[i]);
+                            i++;
                         }
+
+                        for (var j = apisMessageDividedPassengerList.Count(); j >= 0; j--)
+                        {
+                            if (apisMessageDividedPassengerList[j - 1].Contains(nadFl))
+                            {
+                                i = j - 1;
+                                j = 0;
+                            }
+                        }
+                        apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNB)] = unb + sender + receiver + yearToMin + plus + partIdentifier + BZcode + apos;
+                        apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNG)] = ung + sender + receiver + yearToMin + plus + partIdentifier + GEcode + typeVersionNum + version05B;
+
+                        if (apisMessageDividedPassengerList.Contains(apisMessagePassengerList.First()))
+                            apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNH)] = unh + partIdentifier + HTcode + unhMid1 + version05B + unhMid2 + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + ":C'";
+
+
+                        else if (apisMessageDividedPassengerList.Contains(apisMessagePassengerList.Last()))
+                            apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNH)] = unh + HTcode + unhMid1 + version05B + unhMid2 + partIdentifier + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + ":F'";
+
+                        else
+                            apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNH)] = unh + HTcode + unhMid1 + version05B + unhMid2;
+
+                        apisMessageList.AddRange(apisMessageHeaderList);
+
+                        for (var a = 0; a < i; a++)
+                        {
+                            apisMessageList.Add(apisMessageDividedPassengerList[a]);
+                            apisMessagePassengerList.Remove(apisMessageDividedPassengerList[a]);
+                        }
+
+                        apisMessageFooterList.Add(unt + fromUNHtoUNTTotalRow + plus + partIdentifier + HTcode + apos);
+                        apisMessageFooterList.Add(une + partIdentifier + GEcode + apos);
+                        apisMessageFooterList.Add(unz + partIdentifier + BZcode + apos);
+
+                        apisMessageList.AddRange(apisMessageFooterList);
+                        apisMessageList.Add("*******************************************************************");
+                        apisMessageDividedPassengerList.Clear();
 
                     }
 
                 }
+                else
+                {
+                    Logger.Default.Append(LogLevel.Error, string.Format(ErrorResource.PartIdentifierUnknown, exportRequest.PartType));
+                }
+                #endregion Multi Part
+                apisMessageList.Add(partIdentifier.ToString().PadLeft(3, '0') + "PartIdentifier:");//PartIdentifier Mesaj liste eklyoruz.
+                return apisMessageList;
+
+            }
+            /// <summary>
+            /// Get Content Type
+            /// </summary>
+            /// <returns></returns>
+            public string GetContentType()
+            {
+                return "text/plain";
             }
         }
+        
     }
 
 

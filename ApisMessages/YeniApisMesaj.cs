@@ -399,6 +399,7 @@ namespace DCS.App.Service.Service.Exporter.PaxLst
                                 j = 0;
                             }
                         }
+
                         //UNH segmenti için part number eklendi
                         apisMessageHeaderList[1] = unb+sender + plus + recive + plus + nowDate + plus + partIdentifier + confirmation1 + "++" + recive + apos;
                         apisMessageHeaderList[2] = ung+sender + plus + (!string.IsNullOrEmpty(recive2) ? recive2 : recive) + plus + nowDate + plus + partIdentifier + confirmation2 + typeVersionNum + version + apos;

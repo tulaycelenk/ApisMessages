@@ -30,11 +30,11 @@ namespace ApisMessages
         public const string unb = "UNB+UNOA:4+";
         public const string sender = "BRIDGEIS+";
 
-        public const string unbEnd = "++APIS";
+        public const string unbEnd = "++APIS'";
         public const string ung = "UNG+PAXLST+";
         public const string typeVersionNum= "+UN+D:";
         public const string unh = "UNH+";
-        public const string unhMid1 = " +PAXLST:D:";
+        public const string unhMid1 = "+PAXLST:D:";
         public const string unhMid2 = ":UN:IATA";
         public const string unhSinglePart = "+01:F'";
         public const string bgm745 = "BGM+745";//Indicates passenger list
@@ -105,7 +105,7 @@ namespace ApisMessages
         public const string docC = "DOC+C+";
         public const string docIP = "DOC+IP+";
         public const string docAC = "DOC+AC+";
-        public const string docA = "DOC+A+";
+        public const string docA = "DOC+A+"; 
         public const string docF = "DOC+F+";
         public const string dtm36 = "DTM+36:";
         public const string dtm182 = "DTM+182:";

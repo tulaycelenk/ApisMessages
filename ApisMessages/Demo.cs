@@ -204,7 +204,7 @@ namespace apisMessages
                 apisMessageFooterList.Add(cnt42 + passengerDocsList.Count() + apos);
                 tempList.AddRange(apisMessageHeaderList);
                 tempList.AddRange(apisMessagePassengerList);
-                fromUNHtoUNTTotalRow = apisMessageList.Count() - 1; //  -(UNA UNB UNG) +(UNT CNT)
+                fromUNHtoUNTTotalRow = tempList.Count() - 1; //  -(UNA UNB UNG) +(UNT CNT)
                 tempList.Clear();
                 //string deneme = $"vkjfdnv{airlineName }";
 

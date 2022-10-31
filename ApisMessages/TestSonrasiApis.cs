@@ -1,14 +1,24 @@
-﻿using AviatorManager.ViewModel.Aodb;
+﻿using ApisMessages;
+using AviatorManager.ViewModel.Aodb;
+using Bridge.App.Core.Authentication;
+using Bridge.Common;
+using Bridge.Common.Logging;
+using DCS.App.Service.Entity;
+using DCS.App.Service.Helper;
+using DCS.App.Service.Resources;
+using DCS.App.Service.Service.Dcs;
+using DCS.ViewModel.Dcs;
+using DCS.ViewModel.Paging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static Bridge.Common.ParameterHelper;
 
-namespace ApisMessages
+namespace DCS.App.Service.Service.Exporter.PaxLst
 {
     //PAXLST IMPLEMENTATION GUIDE ANNEX III 28 June 2010 dökümanına göre düzenlenmiştir.
-    public class Version05B : ApisEdifactHelper
+    public class ApisMessages : IExporter, ApisEdifactHelper
     {
         //versiyonlar helper ı içerecek tw a atılacak ve ülkeler bunu kullanacak 
         //ülkere göre değişiklikler ülkelerde yapılacak 
@@ -22,16 +32,24 @@ namespace ApisMessages
 
         //TANIMI YAPILMALI
         private string receiver;
-
-        public byte[] Export(FlightResponse flight, string exporterType, bool singleOrMultiPaxLst)
+        public List<string> GetCreateMessage(FlightResponse flight, ExportRequest exportRequest)
         {
-            IEnumerable<PassengerDocs> passengerDocsList = PassengerDocsService.GetPassengerWithDocsInformation(new PassengerDocsPagingRequest() { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 }).Item1.Where(p => (p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Flown || p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Boarded) && p.PassengerId != 0).OrderBy(s => s.Surname);
+            var enUs = new CultureInfo("en-US");
+
+            string yearToMin = DateTime.Now.ToString("yyMMdd", enUs) + ":" + DateTime.Now.ToString("HHmm", enUs);
+            string yearToDay = DateTime.Now.ToString("yyMMdd", enUs);
+
+            Random r = new Random();
+            string BZcode = r.Next(100000000, 999999999).ToString();
+            string GEcode = r.Next(100000000, 999999999).ToString();
+            string HTcode = r.Next(100000000, 999999999).ToString();
+            string unique = r.Next(100000000, 999999999).ToString();
+            IEnumerable<PassengerDocs> passengerDocsList = PassengerDocsService.GetPassengerWithDocsInformation(new PassengerDocsPagingRequest() { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 }).Item1.Where(p => (p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Flown || p.PassengerStatusCode == ParameterHelper.PaxStatusCode.Boarded || p.PassengerStatusCode == ParameterHelper.PaxStatusCode.CheckedIn) && p.PassengerId != 0).OrderBy(s => s.Surname);
 
             IEnumerable<Passenger> passengerList = PassengerService.QueryPassengersJoined(new PassengerPagingRequest { FlightId = flight.Id }).Where(p => p.PaxStatusCode == ParameterHelper.PaxStatusCode.Flown || p.PaxStatusCode == ParameterHelper.PaxStatusCode.Boarded || p.PaxStatusCode == ParameterHelper.PaxStatusCode.CheckedIn).OrderBy(s => s.Surname);
 
             IEnumerable<Baggage> passengerBaggageList = BaggageService.QueryBaggagesJoined(new BaggagePagingRequest { FlightId = flight.Id, PageNumber = 1, PageSize = 2000 });
 
-            var enUs = new CultureInfo("en-US");
 
             var sobt = flight.Sobt.HasValue ? flight.Sobt.Value.ToString("yyMMddHHmm", enUs) : "";
             var sldt = flight.Sldt.HasValue ? flight.Sldt.Value.ToString("yyMMddHHmm", enUs) : "";
@@ -39,14 +57,15 @@ namespace ApisMessages
             RestHelper rst = new RestHelper(new UrlProviderWithToken(), new HeaderProvider());
             var adepTimezone = rst.GetTimezoneOffsetByAirport(flight.AdepId, DateTime.UtcNow);
             var adepOfset = adepTimezone != null ? TimeSpan.FromSeconds(adepTimezone.GmtOffset).TotalSeconds : 0;
+            int partIdentifier = 1;
+            int apisMessageHeaderListCharecterCount = 0;
+            int apisMessagePassengerListCharecterCount = 0;
+            int apisMessageFootherListCharecterCount = 0;
             #region HEADER 
-            apisMessageHeaderList.Add(una);
-            string UNB = unb + sender + receiver + yearToMin + plus + BZcode + apos;
-            string UNG = ung + sender + receiver + plus + GEcode + typeVersionNum + version05B;
-            string UNH = unh + HTcode + unhMid1 + version05B + unhMid2;
-            apisMessageHeaderList.Add(UNB);
-            apisMessageHeaderList.Add(UNG);
-            apisMessageHeaderList.Add(UNH);
+            apisMessageHeaderList.Add(una + unaEnd);
+            apisMessageHeaderList.Add(unb + sender + receiver + yearToMin + plus + BZcode + apos);
+            apisMessageHeaderList.Add(ung + sender + receiver + plus + GEcode + typeVersionNum + version05B);
+            apisMessageHeaderList.Add(unh + HTcode + unhMid1 + version05B + unhMid2);
             apisMessageHeaderList.Add(bgm745);
             apisMessageHeaderList.Add(nadMs);
             apisMessageHeaderList.Add(com);
@@ -67,15 +86,18 @@ namespace ApisMessages
                 var passengerBaggages = passengerBaggageList.Where(filter => filter.PassengerId == passengerDocs.PassengerId).OrderBy(s => s.BagTag);
                 //Name NAD
                 //ELLE GİRİLEN BİLGİLERLE DÖKÜMANDAKİ BİLGİLER KIYASLANIYOR MU. YANLIŞ GİRİLDİYSE ÖRNEĞİN PASAPORTTA YAZAN GİBİ DEĞİLSE? PASAPORT OKUYUCULARINDAN GELEN İSMİ ALIYOR MUYUZ? KARŞILAŞTIRIYOR MUYUZ?
-                if (!string.IsNullOrEmpty(passengerDocs.Surname))
-                    apisMessagePassengerList.Add(nadFl + (passengerDocs.Surname.Length > 35 ? passengerDocs.Surname.Substring(0, 35) : passengerDocs.Surname) : "") + (!string.IsNullOrEmpty(passengerDocs.Name) ? (":" + (passengerDocs.Name.Length > 35 ? passengerDocs.Name.Substring(0, 35) : passengerDocs.Name).Replace(" ", ":")) : "") + (passengerDoca != null ? ("+" + (!string.IsNullOrEmpty(passengerDoca.ResidenceAddress) ? passengerDoca.ResidenceAddress.Length > 35 ? passengerDoca.ResidenceAddress.Substring(0, 35) : passengerDoca.ResidenceAddress : "") + "+" + passengerDoca.ResidenceCity + "+" + passengerDoca.ResidenceZipCode + "+" + passengerDoca.ResidenceCountryIso3Code) : "") + apos);
+                if (passengerDocs != null && passengerDoca != null && passengerDoco != null)
+                {
+                    if (!string.IsNullOrEmpty(passengerDocs.Surname))
+                        apisMessagePassengerList.Add(nadFl + (passengerDocs.Surname.Length > 35 ? passengerDocs.Surname.Substring(0, 35) : passengerDocs.Surname) + (!string.IsNullOrEmpty(passengerDocs.Name) ? (":" + (passengerDocs.Name.Length > 35 ? passengerDocs.Name.Substring(0, 35) : passengerDocs.Name).Replace(" ", ":")) : "") + (passengerDoca != null ? ("+" + (!string.IsNullOrEmpty(passengerDoca.ResidenceAddress) ? passengerDoca.ResidenceAddress.Length > 35 ? passengerDoca.ResidenceAddress.Substring(0, 35) : passengerDoca.ResidenceAddress : "") + "+" + passengerDoca.ResidenceCity + "+" + passengerDoca.ResidenceZipCode + "+" + passengerDoca.ResidenceCountryIso3Code) : "") + apos);
 
-                //Gender ATT
-                //passengerDocs.GenderCod UI DAN GELEN VERİNİN KARŞILIĞI MI?
-                apisMessagePassengerList.Add(passengerDocs.GenderCode == PaxGenderCode.FemaleChild || passengerDocs.GenderCode == PaxGenderCode.Female ? attF : (passengerDocs.GenderCode == PaxGenderCode.MaleChild || passengerDocs.GenderCode == PaxGenderCode.Male ? attM : (passengerDocs.GenderCode == PaxGenderCode.Child || passengerDocs.GenderCode == PaxGenderCode.Infant ? attU : "")));
-                //Date of Birth DTM
-                apisMessagePassengerList.Add(dtm329 + passengerDocs.Dob.Value.ToString("yyMMdd") + apos);
-
+                    //Gender ATT
+                    //passengerDocs.GenderCod UI DAN GELEN VERİNİN KARŞILIĞI MI?
+                    apisMessagePassengerList.Add(passengerDocs.GenderCode == PaxGenderCode.FemaleChild || passengerDocs.GenderCode == PaxGenderCode.Female ? attF : (passengerDocs.GenderCode == PaxGenderCode.MaleChild || passengerDocs.GenderCode == PaxGenderCode.Male ? attM : (passengerDocs.GenderCode == PaxGenderCode.Child || passengerDocs.GenderCode == PaxGenderCode.Infant ? attU : "")));
+                    //Date of Birth DTM
+                    if (passengerDocs.Dob.HasValue)
+                        apisMessagePassengerList.Add(dtm329 + passengerDocs.Dob.Value.ToString("yyMMdd") + apos);
+                }
                 //Baggage MEA
                 apisMessagePassengerList.Add(meaCt + passenger.BagCount + apos);
 
@@ -123,12 +145,12 @@ namespace ApisMessages
                 if (!string.IsNullOrEmpty(passengerDoca.ResidenceCountryIso3Code))
                     apisMessagePassengerList.Add(loc174 + passengerDoca.ResidenceCountryIso3Code + apos);
                 /*
-                //place of birth
-                apisMessagePassengerList.Add(loc180 + threeColon + PLACE OF BIRTH + apos);
-               
-                //communication number of the passenger
-                apisMessagePassengerList.Add(com + NUMBER:TE + apos);
-                 */
+                 //place of birth
+                 apisMessagePassengerList.Add(loc180 + threeColon + PLACE OF BIRTH + apos);
+
+                 //communication number of the passenger
+                 apisMessagePassengerList.Add(com + NUMBER:TE + apos);
+                  */
 
                 //nationality
                 if (!string.IsNullOrEmpty(passengerDocs.NationalityCode))
@@ -148,7 +170,7 @@ namespace ApisMessages
                 apisMessagePassengerList.Add(rffAea + GOVERNEMENT AGENCY REF NUMBER apos);
                 */
                 //doc type (docp or docv)
-                if (!string.IsNullOrEmpty(passengerDocs.DocNumberr) || !string.IsNullOrEmpty(passengerDocs.DocTypeCode))
+                if (!string.IsNullOrEmpty(passengerDocs.DocNumber) || !string.IsNullOrEmpty(passengerDocs.DocTypeCode))
                 {
                     switch (passengerDocs.DocTypeCode)
                     {
@@ -182,19 +204,24 @@ namespace ApisMessages
                     }
                 }
 
-                // expiry date of the official travel doc dtm36
-                if (passengerDoco.Doe.HasValue)
-                    apisMessagePassengerList.Add(dtm36 + passengerDoco.Doe.Value.ToString("yyMMdd") + apos);
-
+                //// expiry date of the official travel doc dtm36
+                if (!string.IsNullOrEmpty(passengerDoco))
+                {
+                    if (passengerDoco.Doe.HasValue)
+                        apisMessagePassengerList.Add(dtm36 + passengerDoco.Doe.Value.ToString("yyMMdd") + apos);
+                }
                 /*
                 //issue date of the other doc used for travel dtm182
                 //ONAYLANMA TARİHİ TABLOLARDA YOK
                 apisMessagePassengerList.Add(dtm182 + OTHER DOCUMENTs ISSUE DATE + apos);
                 */
 
-                //issuing country code loc91
-                if (!string.IsNullOrEmpty(passengerDoco.DocForNationalityCode))
-                    apisMessagePassengerList.Add(loc91 + passengerDoco.DocForNationalityCode + apos);
+                ////issuing country code loc91
+                if (!string.IsNullOrEmpty(passengerDoco))
+                {
+                    if (!string.IsNullOrEmpty(passengerDoco.DocForNationalityCode))
+                        apisMessagePassengerList.Add(loc91 + passengerDoco.DocForNationalityCode + apos);
+                }
 
                 /*
                 //issued city loc91 with three colon
@@ -209,11 +236,12 @@ namespace ApisMessages
             tempList.AddRange(apisMessageHeaderList);
             tempList.AddRange(apisMessagePassengerList);
             int fromUNHtoUNTTotalRow = tempList.Count() - 1; //  -(UNA UNB UNG) +(UNT CNT)
-            tempList.Clear();
+            //tempList.Clear();
             #endregion
 
             if (exportRequest.PartType == "S")
             {
+                apisMessageList.AddRange(tempList);
                 apisMessageFooterList.Add(unt + fromUNHtoUNTTotalRow + plus + HTcode + apos);
                 apisMessageFooterList.Add(une + GEcode + apos);
                 apisMessageFooterList.Add(unz + BZcode + apos);
@@ -222,11 +250,6 @@ namespace ApisMessages
             }
             else if (exportRequest.PartType == "M")
             {
-                var partIdentifier = 1;
-                int apisMessageHeaderListCharecterCount = 0;
-                int apisMessagePassengerListCharecterCount = 0;
-                int apisMessageFootherListCharecterCount = 0;
-
                 foreach (var apisMessageHeader in apisMessageHeaderList)
                 {
                     apisMessageHeaderListCharecterCount += apisMessageHeader.Length;
@@ -240,7 +263,8 @@ namespace ApisMessages
 
                 for (var i = 0; i < apisMessagePassengerList.Count(); i++)
                 {
-                    while (apisMessagePassengerListCharecterCount >= maxCharForPassengers)
+                    apisMessagePassengerListCharecterCount = 0;
+                    while (apisMessagePassengerListCharecterCount <= maxCharForPassengers && i < apisMessagePassengerList.Count())
                     {
                         apisMessagePassengerListCharecterCount += apisMessagePassengerList[i].Length + 1; // +1:Line 
                         apisMessageDividedPassengerList.Add(apisMessagePassengerList[i]);
@@ -255,18 +279,20 @@ namespace ApisMessages
                             j = 0;
                         }
                     }
-                    apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNB)] = unb + sender + receiver + yearToMin + plus + partIdentifier + BZcode + apos;
-                    apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNG)] = ung + sender + receiver + yearToMin + plus + partIdentifier + GEcode + typeVersionNum + version05B;
+
+                    apisMessageHeaderList[apisMessageHeaderList.FindIndex(x => x.StartsWith(unb))] = unb + sender + receiver + yearToMin + plus + partIdentifier + BZcode + apos;
+
+
+                    apisMessageHeaderList[apisMessageHeaderList.FindIndex(x => x.StartsWith(ung))] = ung + sender + receiver + yearToMin + plus + partIdentifier + GEcode + typeVersionNum + version05B;
 
                     if (apisMessageDividedPassengerList.Contains(apisMessagePassengerList.First()))
-                        apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNH)] = unh + partIdentifier + HTcode + unhMid1 + version05B + unhMid2 + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + ":C'";
-
+                        apisMessageHeaderList[apisMessageHeaderList.FindIndex(x => x.StartsWith(unh))] = unh + partIdentifier + HTcode + unhMid1 + version05B + unhMid2 + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + ":C'";
 
                     else if (apisMessageDividedPassengerList.Contains(apisMessagePassengerList.Last()))
-                        apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNH)] = unh + HTcode + unhMid1 + version05B + unhMid2 + partIdentifier + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + ":F'";
+                        apisMessageHeaderList[apisMessageHeaderList.FindIndex(x => x.StartsWith(unh))] = unh + HTcode + unhMid1 + version05B + unhMid2 + partIdentifier + unique + plus + partIdentifier.ToString().PadLeft(2, '0') + ":F'";
 
                     else
-                        apisMessageHeaderList[apisMessageHeaderList.IndexOf(UNH)] = unh + HTcode + unhMid1 + version05B + unhMid2;
+                        apisMessageHeaderList[apisMessageHeaderList.FindIndex(x => x.StartsWith(unh))] = unh + HTcode + unhMid1 + version05B + unhMid2;
 
                     apisMessageList.AddRange(apisMessageHeaderList);
 
@@ -289,9 +315,8 @@ namespace ApisMessages
             }
             else
             {
-                 Logger.Default.Append(LogLevel.Error, string.Format(ErrorResource.PartIdentifierUnknown, exportRequest.PartType));
+                Logger.Default.Append(LogLevel.Error, string.Format(ErrorResource.PartIdentifierUnknown, exportRequest.PartType));
             }
-            #endregion
 
             apisMessageList.Add(partIdentifier.ToString().PadLeft(3, '0') + "PartIdentifier:");//PartIdentifier Mesaj liste eklyoruz.
             return apisMessageList;
@@ -306,6 +331,6 @@ namespace ApisMessages
             return "text/plain";
         }
     }
-        
-    
+
+
 }

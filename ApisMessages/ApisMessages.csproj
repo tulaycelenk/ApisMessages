@@ -79,6 +79,7 @@
     <Compile Include="PassengerDocs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestSonrasiApis.cs" />
     <Compile Include="Version02B.cs" />
     <Compile Include="Version05B.cs" />
     <Compile Include="Version12B.cs" />
